@@ -96,7 +96,6 @@ class MoveLogicServiceTest {
         assertEquals(0, match.getPlayerModelB().getTotalScore());
     }
 
-
     @Test
     @DisplayName("Testing if moving handles large amount of stones")
     void movingStones_playerA_movingFromFirstPit_with13Stones_expectCorrectStonePlacement() {

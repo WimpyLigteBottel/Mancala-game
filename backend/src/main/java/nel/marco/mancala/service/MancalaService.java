@@ -78,14 +78,15 @@ public class MancalaService {
 
         //NOTE: the isPlayerA is like safetyCheck to make sure its not someone else trying to cheat ;)
         if (isPlayerA && match.isPlayerATurn()) {
-
             Match updatedMatch = stoneLogicService.movingStones(true, command.getPit(), match);
             updatedMatch.setPlayerATurn(false);
             internalMemoryMap.put(command.getMatchID(), updatedMatch);
-        } else {
+        } else if(isPlayerB && !match.isPlayerATurn()) {
             Match updatedMatch = stoneLogicService.movingStones(false, command.getPit(), match);
             updatedMatch.setPlayerATurn(true);
             internalMemoryMap.put(command.getMatchID(), updatedMatch);
+        }else{
+            log.error("INVALID PLAYER COMMAND!!!"); // TODO: handle this more nicely*
         }
 
     }
