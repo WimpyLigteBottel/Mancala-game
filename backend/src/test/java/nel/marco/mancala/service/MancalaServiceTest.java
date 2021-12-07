@@ -1,9 +1,12 @@
 package nel.marco.mancala.service;
 
 import nel.marco.mancala.controller.model.PlayerModel;
+import nel.marco.mancala.service.stones.MoveLogicService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,44 +14,47 @@ class MancalaServiceTest {
 
     MancalaService mancalaService;
 
+    @Mock
+    MoveLogicService mockMoveLogicService;
+
+    @BeforeEach
     public void setup() {
-        mancalaService = new MancalaService();
+        MockitoAnnotations.openMocks(this);
+        mancalaService = new MancalaService(mockMoveLogicService);
     }
 
     @Test
+    @DisplayName("There should be 7 pits in total per player")
     void createBoard_expectBoardLengthToBeCorrect() {
 
         PlayerModel playerA = new PlayerModel();
         PlayerModel playerB = new PlayerModel();
-        mancalaService.createBoard(playerA, playerB);
+        Match match = mancalaService.createMatch(playerA, playerB);
 
-        assertEquals(6, playerA.getPits().length);
-        assertEquals(6, playerB.getPits().length);
+        assertEquals(6, match.getPlayerModelA().getPits().size());
+        assertEquals(6, match.getPlayerModelA().getPits().size());
     }
 
     @Test
+    @DisplayName("Each pit == 6 marbles")
     void createBoard_expectStartingPitsToBeEqual() {
 
         PlayerModel playerA = new PlayerModel();
         PlayerModel playerB = new PlayerModel();
-        mancalaService.createBoard(playerA, playerB);
+        mancalaService.createMatch(playerA, playerB);
 
-        Arrays.stream(playerA.getPits()).forEach(marbles -> {
+        playerA.getPits().forEach((index, marbles) -> {
             assertEquals(6, marbles, "The amount of marbles in pit should be 6");
         });
 
-
-        Arrays.stream(playerB.getPits()).forEach(marbles -> {
+        playerB.getPits().forEach((index, marbles) -> {
             assertEquals(6, marbles, "The amount of marbles in pit should be 6");
         });
-
     }
 
     @Test
     void executeCommand() {
     }
 
-    @Test
-    void movingStones() {
-    }
+
 }

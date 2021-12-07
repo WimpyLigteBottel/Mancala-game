@@ -2,10 +2,13 @@ package nel.marco.mancala.controller.model;
 
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
 public class PlayerModel {
 
-    private int[] pits = new int[6];
+    private Map<Integer, Integer> pits = new HashMap<>();
     private long id;
     private String uniqueId;
     private String username;
@@ -14,7 +17,7 @@ public class PlayerModel {
     public PlayerModel() {
     }
 
-    public PlayerModel(int[] pits, long id, String username) {
+    public PlayerModel(Map<Integer, Integer> pits, long id, String username) {
         this.pits = pits;
         this.id = id;
         this.username = username;

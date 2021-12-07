@@ -2,12 +2,12 @@ package nel.marco.mancala.controller.model;
 
 public enum PIT {
 
-    FIRST(0),
-    SECOND(1),
-    THIRD(2),
-    FOURTH(3),
-    FIFTH(4),
-    SIX(5);
+    FIRST(1),
+    SECOND(2),
+    THIRD(3),
+    FOURTH(4),
+    FIFTH(5),
+    SIX(6);
 
     private int pitIndex;
 
