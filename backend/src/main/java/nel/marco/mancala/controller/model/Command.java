@@ -1,7 +1,6 @@
-package nel.marco.mancala.service;
+package nel.marco.mancala.controller.model;
 
 import lombok.Data;
-import nel.marco.mancala.controller.model.PIT;
 
 @Data
 public class Command {

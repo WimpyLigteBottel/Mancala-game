@@ -1,6 +1,7 @@
 package nel.marco.mancala.service;
 
 import lombok.extern.slf4j.Slf4j;
+import nel.marco.mancala.controller.model.Command;
 import nel.marco.mancala.controller.model.PIT;
 import nel.marco.mancala.controller.model.PlayerModel;
 import nel.marco.mancala.service.stones.MoveLogicService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,6 +30,13 @@ public class MancalaService {
     }
 
     Map<String, Match> internalMemoryMap = new ConcurrentHashMap<>();
+
+
+    public Optional<Match> getMatch(String uniqueMatch) {
+        return Optional.ofNullable(internalMemoryMap.get(uniqueMatch));
+    }
+
+
 
     /**
      * Sets up the boardstate for both players.
@@ -63,8 +72,9 @@ public class MancalaService {
      * 4. Update the match stats
      *
      * @param command The command form the player
+     * @return
      */
-    public void executeCommand(Command command) {
+    public String executeCommand(Command command) {
 
         Match match = internalMemoryMap.get(command.getMatchID());
 
@@ -98,6 +108,8 @@ public class MancalaService {
         } else {
             log.error("INVALID PLAYER COMMAND!!!"); // TODO: handle this more nicely*
         }
+
+        return match.getUniqueMatchId();
 
     }
 
