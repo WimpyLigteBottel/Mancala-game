@@ -1,6 +1,7 @@
 package nel.marco.mancala.service;
 
 import nel.marco.mancala.controller.v1.model.Command;
+import nel.marco.mancala.controller.v1.model.Match;
 import nel.marco.mancala.controller.v1.model.PIT;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
 import nel.marco.mancala.service.stones.MoveLogicService;

@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="css/styles.css" rel="stylesheet"/>
+</head>
+<body>
+
+
+<div class="container">
+    <div style="display:flex">
+        <span>MatchId:</span>
+        <form action="#" th:action="@{/getMatch}" method="get">
+            <span><input type="text" size="50" name="matchId" data-th-object="${model}" th:field="${match.uniqueMatchId}"></span>
+            <span><input type="button" value="login"/></span>
+            <span><input type="submit" name="action" value="get stats"/></span>
+        </form>
+
+    </div>
+</div>
+
+<div class="container">
+    <div style="display:flex">
+        <span>Username:</span>
+        <span> <input th:field="${match.playerModelA.username}" type="text" size="20"/></span>
+    </div>
+    <button type="button" value="update">claim</button>
+    <button type="button" value="update">update</button>
+    <br/>
+</div>
+
+
+<br/>
+<br/>
+<br/>
+
+<div class="container">
+
+    Player A
+
+    <div class="container__column" style="color:blue;" th:text="${'FIRST: '+ match.playerModelB.pits['FIRST']}">FIRST
+    </div>
+    <div class="container__column" style="color:blue;" th:text="${'SECOND: '+match.playerModelB.pits['SECOND']}">
+        SECOND
+    </div>
+    <div class="container__column" style="color:blue;" th:text="${'THIRD: '+match.playerModelB.pits['THIRD']}">THIRD
+    </div>
+    <div class="container__column" style="color:blue;" th:text="${'FOURTH: '+match.playerModelB.pits['FOURTH']}">
+        FOURTH
+    </div>
+    <div class="container__column" style="color:blue;" th:text="${'FIFTH: '+match.playerModelB.pits['FIFTH']}">FIFTH
+    </div>
+    <div class="container__column" style="color:blue;" th:text="${'SIX: '+match.playerModelB.pits['SIX']}">SIX</div>
+
+
+</div>
+<br/>
+______________________________________
+<br/>
+<br/>
+<div class="container">
+    Player B
+
+    <div class="container__column" style="color:red;" th:text="${'FIRST: '+ match.playerModelA.pits['FIRST']}">FIRST
+    </div>
+    <div class="container__column" style="color:red;" th:text="${'SECOND: '+match.playerModelA.pits['SECOND']}">SECOND
+    </div>
+    <div class="container__column" style="color:red;" th:text="${'THIRD: '+match.playerModelA.pits['THIRD']}">THIRD
+    </div>
+    <div class="container__column" style="color:red;" th:text="${'FOURTH: '+match.playerModelA.pits['FOURTH']}">FOURTH
+    </div>
+    <div class="container__column" style="color:red;" th:text="${'FIFTH: '+match.playerModelA.pits['FIFTH']}">FIFTH
+    </div>
+    <div class="container__column" style="color:red;" th:text="${'SIX: '+match.playerModelA.pits['SIX']}">SIX</div>
+</div>
+
+
+</body>
+</html>
+
+<script>
+
+
+</script>

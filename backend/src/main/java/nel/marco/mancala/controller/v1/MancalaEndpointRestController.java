@@ -5,7 +5,7 @@ import nel.marco.mancala.controller.v1.model.ErrorMessage;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
 import nel.marco.mancala.controller.v1.validator.MancalaEndpointValidator;
 import nel.marco.mancala.service.MancalaService;
-import nel.marco.mancala.service.Match;
+import nel.marco.mancala.controller.v1.model.Match;
 import nel.marco.mancala.service.exceptions.NotThatPlayerTurnException;
 import nel.marco.mancala.service.exceptions.UnknownPlayerException;
 import org.springframework.beans.factory.annotation.Autowired;

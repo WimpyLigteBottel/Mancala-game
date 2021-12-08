@@ -3,7 +3,7 @@ package nel.marco.mancala.controller.v1.validator;
 import nel.marco.mancala.controller.v1.model.Command;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
 import nel.marco.mancala.service.MancalaService;
-import nel.marco.mancala.service.Match;
+import nel.marco.mancala.controller.v1.model.Match;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

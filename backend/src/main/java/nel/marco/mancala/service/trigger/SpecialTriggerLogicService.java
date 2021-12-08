@@ -3,7 +3,7 @@ package nel.marco.mancala.service.trigger;
 import nel.marco.mancala.controller.v1.model.PIT;
 import nel.marco.mancala.controller.v1.model.Player;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
-import nel.marco.mancala.service.Match;
+import nel.marco.mancala.controller.v1.model.Match;
 import org.springframework.stereotype.Service;
 
 @Service
