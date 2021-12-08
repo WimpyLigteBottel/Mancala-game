@@ -1,9 +1,9 @@
 package nel.marco.mancala.service;
 
 import lombok.extern.slf4j.Slf4j;
-import nel.marco.mancala.controller.model.Command;
-import nel.marco.mancala.controller.model.PIT;
-import nel.marco.mancala.controller.model.PlayerModel;
+import nel.marco.mancala.controller.v1.model.Command;
+import nel.marco.mancala.controller.v1.model.PIT;
+import nel.marco.mancala.controller.v1.model.PlayerModel;
 import nel.marco.mancala.service.stones.MoveLogicService;
 import nel.marco.mancala.service.trigger.SpecialTriggerLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +29,46 @@ public class MancalaService {
         this.specialTriggerLogicService = specialTriggerLogicService;
     }
 
-    Map<String, Match> internalMemoryMap = new ConcurrentHashMap<>();
+    private Map<String, Match> internalMemoryMap = new ConcurrentHashMap<>();
 
 
+    /**
+     * Find current active matches
+     *
+     * @param uniqueMatch
+     * @return
+     */
     public Optional<Match> getMatch(String uniqueMatch) {
         return Optional.ofNullable(internalMemoryMap.get(uniqueMatch));
     }
 
+    /**
+     * Tries to find the player in the match
+     *
+     * @param matchId
+     * @param uniquePlayerId
+     * @return
+     */
+    public Optional<PlayerModel> findPlayerInMatch(String matchId, String uniquePlayerId) {
+
+
+        Optional<Match> match = getMatch(matchId);
+
+        if (match.isEmpty()) {
+            return Optional.empty();
+        }
+
+        PlayerModel playerA = match.get().getPlayerModelA();
+        PlayerModel playerB = match.get().getPlayerModelB();
+
+        if (playerA.getUniqueId().equals(uniquePlayerId)) {
+            return Optional.of(playerA);
+        } else if (playerB.getUniqueId().equals(uniquePlayerId)) {
+            return Optional.of(playerB);
+        }
+
+        return Optional.empty();
+    }
 
 
     /**
@@ -59,6 +92,7 @@ public class MancalaService {
         match.setPlayerModelA(playerA);
         match.setPlayerModelB(playerB);
         match.setUniqueMatchId(UUID.randomUUID().toString());
+        match.setPlayerATurn(true);
 
         internalMemoryMap.put(match.getUniqueMatchId(), match);
 

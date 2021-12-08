@@ -1,4 +1,4 @@
-package nel.marco.mancala.controller.model;
+package nel.marco.mancala.controller.v1.model;
 
 import java.util.Arrays;
 

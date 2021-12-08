@@ -1,8 +1,8 @@
 package nel.marco.mancala.service;
 
-import nel.marco.mancala.controller.model.Command;
-import nel.marco.mancala.controller.model.PIT;
-import nel.marco.mancala.controller.model.PlayerModel;
+import nel.marco.mancala.controller.v1.model.Command;
+import nel.marco.mancala.controller.v1.model.PIT;
+import nel.marco.mancala.controller.v1.model.PlayerModel;
 import nel.marco.mancala.service.stones.MoveLogicService;
 import nel.marco.mancala.service.trigger.SpecialTriggerLogicService;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,12 +63,6 @@ class MancalaServiceTest {
             assertEquals(6, marbles, "The amount of marbles in pit should be 6");
         });
     }
-
-
-    @Test
-    void executeCommand() {
-    }
-
 
     @Test
     @DisplayName("Gets the match id back after executing command")
