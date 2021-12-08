@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import nel.marco.mancala.controller.v1.model.Command;
 import nel.marco.mancala.controller.v1.model.PIT;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
+import nel.marco.mancala.service.exceptions.NotThatPlayerTurnException;
+import nel.marco.mancala.service.exceptions.UnknownPlayerException;
 import nel.marco.mancala.service.stones.MoveLogicService;
 import nel.marco.mancala.service.trigger.SpecialTriggerLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,51 +107,57 @@ public class MancalaService {
      * 3. Execute the logic to move the stones accordingly
      * 4. Update the match stats
      *
-     * @param command The command form the player
+     * @param command        The command form the player
+     * @param matchId
+     * @param uniquePlayerId
      * @return
      */
-    public String executeCommand(Command command) {
+    public String executeCommand(Command command, String matchId, String uniquePlayerId) {
 
-        Match match = internalMemoryMap.get(command.getMatchID());
+        Match match = internalMemoryMap.get(matchId);
 
         if (match == null) {
-            throw new RuntimeException("This match does not exist");//TODO:Replace with proper Exception to indicate what the issue was
+            throw new MatchDoesNotExistException("This match does not exist");//TODO:Replace with proper Exception to indicate what the issue was
         }
 
         PlayerModel playerModelA = match.getPlayerModelA();
         PlayerModel playerModelB = match.getPlayerModelB();
 
-        boolean isPlayerA = command.getPlayerUniqueId().equals(playerModelA.getUniqueId());
-        boolean isPlayerB = command.getPlayerUniqueId().equals(playerModelB.getUniqueId());
+        boolean isPlayerA = uniquePlayerId.equals(playerModelA.getUniqueId());
+        boolean isPlayerB = uniquePlayerId.equals(playerModelB.getUniqueId());
 
         if (!isPlayerA && !isPlayerB) {
-            throw new RuntimeException("Unknown player ->" + command.getPlayerUniqueId()); //TODO: make this more clear and add the player
+            throw new UnknownPlayerException("Unknown player ->" + uniquePlayerId); //TODO: make this more clear and add the player
         }
 
         //NOTE: the isPlayerA is like safetyCheck to make sure its not someone else trying to cheat ;)
-        if (isPlayerA && match.isPlayerATurn()) {
-            Match updatedMatch = moveLogicService.movingStones(true, command.getPit(), match);
-            updatedMatch.setPlayerATurn(false);
-            updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
-            clearNecessaryDataForNextMatch(updatedMatch);
-            internalMemoryMap.put(command.getMatchID(), updatedMatch);
-        } else if (isPlayerB && !match.isPlayerATurn()) {
-            Match updatedMatch = moveLogicService.movingStones(false, command.getPit(), match);
-            updatedMatch.setPlayerATurn(true);
-            updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
-            clearNecessaryDataForNextMatch(updatedMatch);
-            internalMemoryMap.put(command.getMatchID(), updatedMatch);
-        } else {
-            log.error("INVALID PLAYER COMMAND!!!"); // TODO: handle this more nicely*
+        boolean isPlayerATurn = isPlayerA && match.isPlayerATurn();
+        boolean isPlayerBTurn = isPlayerB && !match.isPlayerATurn();
+
+        if (isPlayerA && isPlayerBTurn || isPlayerB && isPlayerATurn) {
+            log.error("INVALID PLAYER COMMAND!!! [playerId={};command={}]", uniquePlayerId, command.getPit()); // TODO: handle this more nicely*
+            throw new NotThatPlayerTurnException("Not that player turn yet");
         }
 
-        return match.getUniqueMatchId();
+        Match updatedMatch;
+        if (isPlayerATurn) {
+            updatedMatch = moveLogicService.movingStones(isPlayerATurn, command.getPit(), match);
+            updatedMatch.setPlayerATurn(false);
+        } else {
+            updatedMatch = moveLogicService.movingStones(isPlayerBTurn, command.getPit(), match);
+            updatedMatch.setPlayerATurn(true);
+        }
+        updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
+        updateMatch(updatedMatch);
 
+        return match.getUniqueMatchId();
     }
 
-    private void clearNecessaryDataForNextMatch(Match updatedMatch) {
+
+    private void updateMatch(Match updatedMatch) {
         updatedMatch.setLastStoneLocation(null);
         updatedMatch.setLastStonePlayerBoard(null);
+        internalMemoryMap.put(updatedMatch.getUniqueMatchId(), updatedMatch);
     }
 
 

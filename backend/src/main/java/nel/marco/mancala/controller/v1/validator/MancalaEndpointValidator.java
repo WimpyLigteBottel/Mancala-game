@@ -63,16 +63,8 @@ public class MancalaEndpointValidator {
         if (command == null) {
             errors.add("'command' can not be null or empty");
         } else {
-            if (command.getMatchID() == null || command.getMatchID().trim().isBlank()) {
-                errors.add("'command.matchId' can not be null or empty");
-            }
-
             if (command.getPit() == null) {
                 errors.add("'command.pit' can not be null or empty");
-            }
-
-            if (command.getPlayerUniqueId() == null || command.getPlayerUniqueId().trim().isBlank()) {
-                errors.add("'command.uniquePlayerId' can not be null or empty");
             }
         }
 

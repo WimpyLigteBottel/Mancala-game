@@ -1,10 +1,13 @@
 package nel.marco.mancala.controller.v1;
 
 import nel.marco.mancala.controller.v1.model.Command;
+import nel.marco.mancala.controller.v1.model.ErrorMessage;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
 import nel.marco.mancala.controller.v1.validator.MancalaEndpointValidator;
 import nel.marco.mancala.service.MancalaService;
 import nel.marco.mancala.service.Match;
+import nel.marco.mancala.service.exceptions.NotThatPlayerTurnException;
+import nel.marco.mancala.service.exceptions.UnknownPlayerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -84,16 +87,26 @@ public class MancalaEndpointRestController {
                                             @PathVariable(name = "matchId", required = true, value = "") String matchId,
                                             @PathVariable(name = "uniquePlayerId", required = true, value = "") String uniquePlayerId) {
 
-
         List<String> errors = mancalaEndpointValidator.validateExecuteCommand(command, matchId, uniquePlayerId);
 
         if (!errors.isEmpty()) {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        String updatedMatchId = mancalaService.executeCommand(command);
+        try {
+            String updatedMatchId = mancalaService.executeCommand(command, matchId, uniquePlayerId);
 
-        return ResponseEntity.ok(updatedMatchId);
+            return ResponseEntity.ok(updatedMatchId);
+        } catch (NotThatPlayerTurnException e) {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.addError("Not your turn yet");
+            return ResponseEntity.badRequest().body(errorMessage);
+        } catch (UnknownPlayerException e) {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.addError("Unknown player");
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
     }
 
 

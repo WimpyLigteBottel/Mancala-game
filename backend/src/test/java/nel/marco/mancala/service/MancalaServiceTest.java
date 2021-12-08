@@ -79,7 +79,7 @@ class MancalaServiceTest {
 
         when(mockMoveLogicService.movingStones(anyBoolean(), any(), any())).thenReturn(match);
         when(specialTriggerLogicService.hasSpecialLogicTriggered(any())).thenReturn(match);
-        String actual = mancalaService.executeCommand(command);
+        String actual = mancalaService.executeCommand(command, matchId, uniquePlayerId);
 
         assertEquals(match.getUniqueMatchId(), actual);
     }
@@ -97,7 +97,7 @@ class MancalaServiceTest {
 
         when(mockMoveLogicService.movingStones(anyBoolean(), any(), any())).thenReturn(match);
         when(specialTriggerLogicService.hasSpecialLogicTriggered(any())).thenReturn(match);
-        String actual = mancalaService.executeCommand(command);
+        String actual = mancalaService.executeCommand(command, matchId, uniquePlayerId);
 
         Optional<Match> optionalMatch = mancalaService.getMatch(actual);
         assertTrue(optionalMatch.isPresent());
