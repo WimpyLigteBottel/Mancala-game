@@ -1,16 +1,18 @@
 package nel.marco.mancala.service.stones;
 
 import nel.marco.mancala.controller.model.PIT;
+import nel.marco.mancala.controller.model.Player;
 import nel.marco.mancala.controller.model.PlayerModel;
 import nel.marco.mancala.service.MancalaService;
 import nel.marco.mancala.service.Match;
+import nel.marco.mancala.service.trigger.SpecialTriggerLogicService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MoveLogicServiceTest {
 
@@ -29,14 +31,14 @@ class MoveLogicServiceTest {
 
         match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
 
-        Map<Integer, Integer> pits = match.getPlayerModelA().getPits();
+        Map<PIT, Integer> pits = match.getPlayerModelA().getPits();
 
-        assertEquals(0, pits.get(1));
-        assertEquals(7, pits.get(2));
-        assertEquals(7, pits.get(3));
-        assertEquals(7, pits.get(4));
-        assertEquals(7, pits.get(5));
-        assertEquals(7, pits.get(6));
+        assertEquals(0, pits.get(PIT.FIRST));
+        assertEquals(7, pits.get(PIT.SECOND));
+        assertEquals(7, pits.get(PIT.THIRD));
+        assertEquals(7, pits.get(PIT.FOURTH));
+        assertEquals(7, pits.get(PIT.FIFTH));
+        assertEquals(7, pits.get(PIT.SIX));
         assertEquals(1, match.getPlayerModelA().getTotalScore());
     }
 
@@ -46,21 +48,60 @@ class MoveLogicServiceTest {
     void movingStones_playerA_movingFromFirstPit_with5Stones_expectCorrectStonePlacement() {
 
         Match match = createDefaultMatch(true);
-        match.getPlayerModelA().getPits().put(1, 5);
+        match.getPlayerModelA().getPits().put(PIT.FIRST, 5);
 
-        assertEquals(5, match.getPlayerModelA().getPits().get(1), "The first pit did not have correct stones for setup");
+        assertEquals(5, match.getPlayerModelA().getPits().get(PIT.FIRST), "The first pit did not have correct stones for setup");
 
         match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
 
-        Map<Integer, Integer> pits = match.getPlayerModelA().getPits();
+        Map<PIT, Integer> pits = match.getPlayerModelA().getPits();
 
-        assertEquals(0, pits.get(1));
-        assertEquals(7, pits.get(2));
-        assertEquals(7, pits.get(3));
-        assertEquals(7, pits.get(4));
-        assertEquals(7, pits.get(5));
-        assertEquals(7, pits.get(6));
+        assertEquals(0, pits.get(PIT.FIRST));
+        assertEquals(7, pits.get(PIT.SECOND));
+        assertEquals(7, pits.get(PIT.THIRD));
+        assertEquals(7, pits.get(PIT.FOURTH));
+        assertEquals(7, pits.get(PIT.FIFTH));
+        assertEquals(7, pits.get(PIT.SIX));
         assertEquals(0, match.getPlayerModelA().getTotalScore());
+    }
+
+    @Test
+    @DisplayName("Making sure last location being set is correct")
+    void movingStones_checkLastPlaceLocation_expectCorrectPlacedLocation() {
+
+        Match match = createDefaultMatch(true);
+        match.getPlayerModelA().getPits().put(PIT.FIRST, 1);
+        assertEquals(1, match.getPlayerModelA().getPits().get(PIT.FIRST), "The first pit did not have correct stones for setup");
+
+        match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
+
+        Map<PIT, Integer> pits = match.getPlayerModelA().getPits();
+
+        assertEquals(0, pits.get(PIT.FIRST));
+        assertEquals(7, pits.get(PIT.SECOND));
+        assertEquals(6, pits.get(PIT.THIRD));
+
+        assertEquals(PIT.SECOND, match.getLastStoneLocation());
+        assertEquals(Player.PLAYER1, match.getLastStonePlayerBoard());
+    }
+
+    @Test
+    @DisplayName("Making sure last location being set is correct")
+    void movingStones_checkLastPlaceLocation_scoreBoard_expectCorrectPlacedLocation() {
+
+        Match match = createDefaultMatch(true);
+        match.getPlayerModelA().getPits().put(PIT.SIX, 1);
+        assertEquals(1, match.getPlayerModelA().getPits().get(PIT.SIX), "The first pit did not have correct stones for setup");
+
+        match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.SIX, match);
+
+        Map<PIT, Integer> pits = match.getPlayerModelA().getPits();
+
+        assertEquals(0, pits.get(PIT.SIX));
+        assertEquals(1, match.getPlayerModelA().getTotalScore());
+
+        assertEquals(PIT.PLAYER_1_BOARD, match.getLastStoneLocation());
+        assertEquals(Player.PLAYER1, match.getLastStonePlayerBoard());
     }
 
 
@@ -70,29 +111,30 @@ class MoveLogicServiceTest {
 
         Match match = createDefaultMatch(true);
 
-        match.getPlayerModelA().getPits().put(1, 12);
-        assertEquals(12, match.getPlayerModelA().getPits().get(1), "The first pit did not have correct stones for setup");
+        match.getPlayerModelA().getPits().put(PIT.FIRST, 12);
+        assertEquals(12, match.getPlayerModelA().getPits().get(PIT.FIRST), "The first pit did not have correct stones for setup");
 
         match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
 
-        Map<Integer, Integer> playerAPits = match.getPlayerModelA().getPits();
+        Map<PIT, Integer> playerAPits = match.getPlayerModelA().getPits();
 
-        assertEquals(0, playerAPits.get(1));
-        assertEquals(7, playerAPits.get(2));
-        assertEquals(7, playerAPits.get(3));
-        assertEquals(7, playerAPits.get(4));
-        assertEquals(7, playerAPits.get(5));
-        assertEquals(7, playerAPits.get(6));
+        assertEquals(0, playerAPits.get(PIT.FIRST));
+        assertEquals(7, playerAPits.get(PIT.SECOND));
+        assertEquals(7, playerAPits.get(PIT.THIRD));
+        assertEquals(7, playerAPits.get(PIT.FOURTH));
+        assertEquals(7, playerAPits.get(PIT.FIFTH));
+        assertEquals(7, playerAPits.get(PIT.SIX));
         assertEquals(1, match.getPlayerModelA().getTotalScore());
 
-        Map<Integer, Integer> playerBPits = match.getPlayerModelB().getPits();
+        Map<PIT, Integer> playerBPits = match.getPlayerModelB().getPits();
 
-        assertEquals(7, playerBPits.get(6));
-        assertEquals(7, playerBPits.get(5));
-        assertEquals(7, playerBPits.get(4));
-        assertEquals(7, playerBPits.get(3));
-        assertEquals(7, playerBPits.get(2));
-        assertEquals(7, playerBPits.get(1));
+
+        assertEquals(7, playerBPits.get(PIT.SIX));
+        assertEquals(7, playerBPits.get(PIT.FIFTH));
+        assertEquals(7, playerBPits.get(PIT.FOURTH));
+        assertEquals(7, playerBPits.get(PIT.THIRD));
+        assertEquals(7, playerBPits.get(PIT.SECOND));
+        assertEquals(7, playerBPits.get(PIT.FIRST));
         assertEquals(0, match.getPlayerModelB().getTotalScore());
     }
 
@@ -101,30 +143,30 @@ class MoveLogicServiceTest {
     void movingStones_playerA_movingFromFirstPit_with13Stones_expectCorrectStonePlacement() {
 
         Match match = createDefaultMatch(true);
-        match.getPlayerModelA().getPits().put(1, 13);
+        match.getPlayerModelA().getPits().put(PIT.FIRST, 13);
 
-        assertEquals(13, match.getPlayerModelA().getPits().get(1), "The first pit did not have correct stones for setup");
+        assertEquals(13, match.getPlayerModelA().getPits().get(PIT.FIRST), "The first pit did not have correct stones for setup");
 
         match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
 
-        Map<Integer, Integer> playerAPits = match.getPlayerModelA().getPits();
+        Map<PIT, Integer> playerAPits = match.getPlayerModelA().getPits();
 
-        assertEquals(1, playerAPits.get(1));
-        assertEquals(7, playerAPits.get(2));
-        assertEquals(7, playerAPits.get(3));
-        assertEquals(7, playerAPits.get(4));
-        assertEquals(7, playerAPits.get(5));
-        assertEquals(7, playerAPits.get(6));
+        assertEquals(1, playerAPits.get(PIT.FIRST));
+        assertEquals(7, playerAPits.get(PIT.SECOND));
+        assertEquals(7, playerAPits.get(PIT.THIRD));
+        assertEquals(7, playerAPits.get(PIT.FOURTH));
+        assertEquals(7, playerAPits.get(PIT.FIFTH));
+        assertEquals(7, playerAPits.get(PIT.SIX));
         assertEquals(1, match.getPlayerModelA().getTotalScore());
 
-        Map<Integer, Integer> playerBPits = match.getPlayerModelB().getPits();
+        Map<PIT, Integer> playerBPits = match.getPlayerModelB().getPits();
 
-        assertEquals(7, playerBPits.get(6));
-        assertEquals(7, playerBPits.get(5));
-        assertEquals(7, playerBPits.get(4));
-        assertEquals(7, playerBPits.get(3));
-        assertEquals(7, playerBPits.get(2));
-        assertEquals(7, playerBPits.get(1));
+        assertEquals(7, playerBPits.get(PIT.SIX));
+        assertEquals(7, playerBPits.get(PIT.FIFTH));
+        assertEquals(7, playerBPits.get(PIT.FOURTH));
+        assertEquals(7, playerBPits.get(PIT.THIRD));
+        assertEquals(7, playerBPits.get(PIT.SECOND));
+        assertEquals(7, playerBPits.get(PIT.FIRST));
         assertEquals(0, match.getPlayerModelB().getTotalScore());
     }
 
@@ -134,30 +176,30 @@ class MoveLogicServiceTest {
     void movingStones_playerA_movingFromSecondPit_with6Stones_expectCorrectStonePlacement() {
 
         Match match = createDefaultMatch(true);
-        match.getPlayerModelA().getPits().put(2, 6);
+        match.getPlayerModelA().getPits().put(PIT.SECOND, 6);
 
-        assertEquals(6, match.getPlayerModelA().getPits().get(2), "The pit did not have correct stones for setup");
+        assertEquals(6, match.getPlayerModelA().getPits().get(PIT.SECOND), "The pit did not have correct stones for setup");
 
         match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.SECOND, match);
 
-        Map<Integer, Integer> playerAPits = match.getPlayerModelA().getPits();
+        Map<PIT, Integer> playerAPits = match.getPlayerModelA().getPits();
 
-        assertEquals(6, playerAPits.get(1));
-        assertEquals(0, playerAPits.get(2));
-        assertEquals(7, playerAPits.get(3));
-        assertEquals(7, playerAPits.get(4));
-        assertEquals(7, playerAPits.get(5));
-        assertEquals(7, playerAPits.get(6));
+        assertEquals(6, playerAPits.get(PIT.FIRST));
+        assertEquals(0, playerAPits.get(PIT.SECOND));
+        assertEquals(7, playerAPits.get(PIT.THIRD));
+        assertEquals(7, playerAPits.get(PIT.FOURTH));
+        assertEquals(7, playerAPits.get(PIT.FIFTH));
+        assertEquals(7, playerAPits.get(PIT.SIX));
         assertEquals(1, match.getPlayerModelA().getTotalScore());
 
-        Map<Integer, Integer> playerBPits = match.getPlayerModelB().getPits();
+        Map<PIT, Integer> playerBPits = match.getPlayerModelB().getPits();
 
-        assertEquals(7, playerBPits.get(6));
-        assertEquals(6, playerBPits.get(5));
-        assertEquals(6, playerBPits.get(4));
-        assertEquals(6, playerBPits.get(3));
-        assertEquals(6, playerBPits.get(2));
-        assertEquals(6, playerBPits.get(1));
+        assertEquals(7, playerBPits.get(PIT.SIX));
+        assertEquals(6, playerBPits.get(PIT.FIFTH));
+        assertEquals(6, playerBPits.get(PIT.FOURTH));
+        assertEquals(6, playerBPits.get(PIT.THIRD));
+        assertEquals(6, playerBPits.get(PIT.SECOND));
+        assertEquals(6, playerBPits.get(PIT.FIRST));
         assertEquals(0, match.getPlayerModelB().getTotalScore());
     }
 
@@ -170,21 +212,21 @@ class MoveLogicServiceTest {
         match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
 
         PlayerModel playerModelB = match.getPlayerModelB();
-        Map<Integer, Integer> pits = playerModelB.getPits();
+        Map<PIT, Integer> pits = playerModelB.getPits();
 
-        assertEquals(0, pits.get(1));
-        assertEquals(7, pits.get(2));
-        assertEquals(7, pits.get(3));
-        assertEquals(7, pits.get(4));
-        assertEquals(7, pits.get(5));
-        assertEquals(7, pits.get(6));
+        assertEquals(0, pits.get(PIT.FIRST));
+        assertEquals(7, pits.get(PIT.SECOND));
+        assertEquals(7, pits.get(PIT.THIRD));
+        assertEquals(7, pits.get(PIT.FOURTH));
+        assertEquals(7, pits.get(PIT.FIFTH));
+        assertEquals(7, pits.get(PIT.SIX));
         assertEquals(1, playerModelB.getTotalScore());
     }
 
     private Match createDefaultMatch(boolean isPlayerAStarting) {
         PlayerModel playerA = new PlayerModel();
         PlayerModel playerB = new PlayerModel();
-        Match match = new MancalaService(moveLogicService).createMatch(playerA, playerB);
+        Match match = new MancalaService(moveLogicService, new SpecialTriggerLogicService()).createMatch(playerA, playerB);
         match.setPlayerATurn(isPlayerAStarting);
         return match;
     }

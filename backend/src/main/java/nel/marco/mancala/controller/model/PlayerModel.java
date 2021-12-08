@@ -8,7 +8,7 @@ import java.util.Map;
 @Data
 public class PlayerModel {
 
-    private Map<Integer, Integer> pits = new HashMap<>();
+    private Map<PIT, Integer> pits = new HashMap<>();
     private long id;
     private String uniqueId;
     private String username;
@@ -17,7 +17,7 @@ public class PlayerModel {
     public PlayerModel() {
     }
 
-    public PlayerModel(Map<Integer, Integer> pits, long id, String username) {
+    public PlayerModel(Map<PIT, Integer> pits, long id, String username) {
         this.pits = pits;
         this.id = id;
         this.username = username;

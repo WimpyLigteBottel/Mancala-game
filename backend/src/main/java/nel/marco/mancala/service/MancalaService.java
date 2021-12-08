@@ -1,8 +1,10 @@
 package nel.marco.mancala.service;
 
 import lombok.extern.slf4j.Slf4j;
+import nel.marco.mancala.controller.model.PIT;
 import nel.marco.mancala.controller.model.PlayerModel;
 import nel.marco.mancala.service.stones.MoveLogicService;
+import nel.marco.mancala.service.trigger.SpecialTriggerLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +17,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class MancalaService {
 
-    private final MoveLogicService stoneLogicService;
+    private final MoveLogicService moveLogicService;
+    private final SpecialTriggerLogicService specialTriggerLogicService;
 
 
     @Autowired // This is technically not needed, but I like to indicate it like this
-    public MancalaService(MoveLogicService stoneLogicService) {
-        this.stoneLogicService = stoneLogicService;
+    public MancalaService(MoveLogicService moveLogicService, SpecialTriggerLogicService specialTriggerLogicService) {
+        this.moveLogicService = moveLogicService;
+        this.specialTriggerLogicService = specialTriggerLogicService;
     }
 
     Map<String, Match> internalMemoryMap = new ConcurrentHashMap<>();
@@ -33,10 +37,10 @@ public class MancalaService {
      */
     public Match createMatch(PlayerModel playerA, PlayerModel playerB) {
 
-        Map<Integer, Integer> initialBoardState = new HashMap<>();
+        Map<PIT, Integer> initialBoardState = new HashMap<>();
 
         for (int i = 1; i < 7; i++) {
-            initialBoardState.put(i, 6);
+            initialBoardState.put(PIT.valueOf(i), 6);
         }
 
         playerA.setPits(new HashMap<>(initialBoardState));
@@ -46,6 +50,8 @@ public class MancalaService {
         match.setPlayerModelA(playerA);
         match.setPlayerModelB(playerB);
         match.setUniqueMatchId(UUID.randomUUID().toString());
+
+        internalMemoryMap.put(match.getUniqueMatchId(), match);
 
         return match;
     }
@@ -78,21 +84,27 @@ public class MancalaService {
 
         //NOTE: the isPlayerA is like safetyCheck to make sure its not someone else trying to cheat ;)
         if (isPlayerA && match.isPlayerATurn()) {
-            Match updatedMatch = stoneLogicService.movingStones(true, command.getPit(), match);
+            Match updatedMatch = moveLogicService.movingStones(true, command.getPit(), match);
             updatedMatch.setPlayerATurn(false);
+            updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
+            clearNecessaryDataForNextMatch(updatedMatch);
             internalMemoryMap.put(command.getMatchID(), updatedMatch);
-        } else if(isPlayerB && !match.isPlayerATurn()) {
-            Match updatedMatch = stoneLogicService.movingStones(false, command.getPit(), match);
+        } else if (isPlayerB && !match.isPlayerATurn()) {
+            Match updatedMatch = moveLogicService.movingStones(false, command.getPit(), match);
             updatedMatch.setPlayerATurn(true);
+            updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
+            clearNecessaryDataForNextMatch(updatedMatch);
             internalMemoryMap.put(command.getMatchID(), updatedMatch);
-        }else{
+        } else {
             log.error("INVALID PLAYER COMMAND!!!"); // TODO: handle this more nicely*
         }
 
     }
 
-
-
+    private void clearNecessaryDataForNextMatch(Match updatedMatch) {
+        updatedMatch.setLastStoneLocation(null);
+        updatedMatch.setLastStonePlayerBoard(null);
+    }
 
 
 }
