@@ -73,13 +73,11 @@ class MancalaServiceTest {
         assertEquals(1, match.getPlayerModelB().getPits().get(PIT.SIX), "The first pit did not have correct stones for setup");
 
         Command command = new Command();
-        command.setMatchID(match.getUniqueMatchId());
         command.setPit(PIT.SIX);
-        command.setPlayerUniqueId(match.getPlayerModelB().getUniqueId());
 
         when(mockMoveLogicService.movingStones(anyBoolean(), any(), any())).thenReturn(match);
         when(specialTriggerLogicService.hasSpecialLogicTriggered(any())).thenReturn(match);
-        String actual = mancalaService.executeCommand(command, matchId, uniquePlayerId);
+        String actual = mancalaService.executeCommand(command, match.getUniqueMatchId(), match.getPlayerModelB().getUniqueId());
 
         assertEquals(match.getUniqueMatchId(), actual);
     }
@@ -91,13 +89,11 @@ class MancalaServiceTest {
         Match match = createDefaultMatch(false);
 
         Command command = new Command();
-        command.setMatchID(match.getUniqueMatchId());
         command.setPit(PIT.SIX);
-        command.setPlayerUniqueId(match.getPlayerModelB().getUniqueId());
 
         when(mockMoveLogicService.movingStones(anyBoolean(), any(), any())).thenReturn(match);
         when(specialTriggerLogicService.hasSpecialLogicTriggered(any())).thenReturn(match);
-        String actual = mancalaService.executeCommand(command, matchId, uniquePlayerId);
+        String actual = mancalaService.executeCommand(command, match.getUniqueMatchId(), match.getPlayerModelB().getUniqueId());
 
         Optional<Match> optionalMatch = mancalaService.getMatch(actual);
         assertTrue(optionalMatch.isPresent());
