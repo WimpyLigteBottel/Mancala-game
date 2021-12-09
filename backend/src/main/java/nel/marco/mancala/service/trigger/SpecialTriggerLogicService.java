@@ -1,5 +1,6 @@
 package nel.marco.mancala.service.trigger;
 
+import lombok.extern.slf4j.Slf4j;
 import nel.marco.mancala.controller.v1.model.PIT;
 import nel.marco.mancala.controller.v1.model.Player;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
@@ -7,6 +8,7 @@ import nel.marco.mancala.controller.v1.model.Match;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class SpecialTriggerLogicService {
 
     public Match hasSpecialLogicTriggered(Match updatedMatch) {
@@ -43,17 +45,8 @@ public class SpecialTriggerLogicService {
     private void stealStones(PIT lastStoneLocation, PlayerModel activePlayer, PlayerModel opponent) {
         Integer amountOfStones = activePlayer.getPits().get(lastStoneLocation);
         if (amountOfStones == 1) {
-            PIT opponentBoard = switch (lastStoneLocation) {
-                case FIRST -> PIT.SIX;
-                case SECOND -> PIT.FIFTH;
-                case THIRD -> PIT.FOURTH;
-                case FOURTH -> PIT.THIRD;
-                case FIFTH -> PIT.SECOND;
-                case SIX -> PIT.FIRST;
-                default -> null;
-            };
-            Integer stonesBeingStolen = opponent.getPits().get(opponentBoard);
-            opponent.getPits().put(opponentBoard, 0);
+            Integer stonesBeingStolen = opponent.getPits().get(lastStoneLocation);
+            opponent.getPits().put(lastStoneLocation, 0);
 
             activePlayer.setTotalScore(activePlayer.getTotalScore() + activePlayer.getPits().get(lastStoneLocation) + stonesBeingStolen);
             activePlayer.getPits().put(lastStoneLocation, 0);
@@ -66,7 +59,9 @@ public class SpecialTriggerLogicService {
 
         if (lastStoneLocation == PIT.PLAYER_1_BOARD && lastStonePlayerBoard == Player.PLAYER1) {
             updatedMatch.setPlayerATurn(true);
+            log.info("gets extra turn  [matchId={};player={}]",updatedMatch.getUniqueMatchId(),"A");
         } else if (lastStoneLocation == PIT.PLAYER_2_BOARD && lastStonePlayerBoard == Player.PLAYER2) {
+            log.info("gets extra turn  [matchId={};player={}]",updatedMatch.getUniqueMatchId(),"B");
             updatedMatch.setPlayerATurn(false);
         }
 
