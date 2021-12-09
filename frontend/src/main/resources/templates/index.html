@@ -1,33 +1,43 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>Marco: Macala</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link href="css/styles.css" rel="stylesheet"/>
 </head>
 <body>
 
-
 <div class="container">
     <div style="display:flex">
         <span>MatchId:</span>
-        <form action="#" th:action="@{/getMatch}" method="get">
-            <span><input type="text" size="50" name="matchId" data-th-object="${model}" th:field="${match.uniqueMatchId}"></span>
-            <span><input type="button" value="login"/></span>
-            <span><input type="submit" name="action" value="get stats"/></span>
+        <form action="#" name="getMatchForm" th:action="@{/getMatch}" method="get">
+            <span><input id="matchIdTextField" type="text" size="50" name="matchId" data-th-object="${model}"
+                         th:field="${match.uniqueMatchId}"></span>
+            <span><input id="activePlayer" type="hidden" name="activePlayer" th:value="${activePlayer}"></span>
+            <span><input id="getStatsButton" type="submit" value="get stats"/></span>
+
+
+        </form>
+
+        <form action="#" th:action="@{/createnewgame}" method="get">
+            <span><input type="submit" value="create new game"/></span>
         </form>
 
     </div>
 </div>
 
 <div class="container">
-    <div style="display:flex">
-        <span>Username:</span>
-        <span> <input th:field="${match.playerModelA.username}" type="text" size="20"/></span>
+    <div id="PlayerABox" style="display:flex" th:if="${activePlayer != match.playerModelB.uniqueId}">
+        <span>Player A:</span>
+        <span> <input id="uniquePlayerIdA" th:field="${match.playerModelA.uniqueId}" type="text" size="20"/></span>
+        <span><button type="button" th:onclick="setCurrentPlayer('uniquePlayerIdA')">claim</button></span>
     </div>
-    <button type="button" value="update">claim</button>
-    <button type="button" value="update">update</button>
-    <br/>
+
+    <div id="PlayerBBox" style="display:flex" th:if="${activePlayer != match.playerModelA.uniqueId}">
+        <span>Player B:</span>
+        <span><input id="uniquePlayerIdB" th:field="${match.playerModelB.uniqueId}" type="text" size="20"/></span>
+        <span><button type="button" th:onclick="setCurrentPlayer('uniquePlayerIdB')">claim</button></span>
+    </div>
 </div>
 
 
@@ -37,42 +47,54 @@
 
 <div class="container">
 
-    Player A
-
-    <div class="container__column" style="color:blue;" th:text="${'FIRST: '+ match.playerModelB.pits['FIRST']}">FIRST
-    </div>
-    <div class="container__column" style="color:blue;" th:text="${'SECOND: '+match.playerModelB.pits['SECOND']}">
-        SECOND
-    </div>
-    <div class="container__column" style="color:blue;" th:text="${'THIRD: '+match.playerModelB.pits['THIRD']}">THIRD
-    </div>
-    <div class="container__column" style="color:blue;" th:text="${'FOURTH: '+match.playerModelB.pits['FOURTH']}">
-        FOURTH
-    </div>
-    <div class="container__column" style="color:blue;" th:text="${'FIFTH: '+match.playerModelB.pits['FIFTH']}">FIFTH
-    </div>
-    <div class="container__column" style="color:blue;" th:text="${'SIX: '+match.playerModelB.pits['SIX']}">SIX</div>
-
-
-</div>
-<br/>
-______________________________________
-<br/>
-<br/>
-<div class="container">
     Player B
 
-    <div class="container__column" style="color:red;" th:text="${'FIRST: '+ match.playerModelA.pits['FIRST']}">FIRST
+    <div class="container__column blue" th:text="${'FIRST: '+ match.playerModelB.pits['FIRST']}"
+         th:onclick="sendCommand('FIRST')">FIRST
     </div>
-    <div class="container__column" style="color:red;" th:text="${'SECOND: '+match.playerModelA.pits['SECOND']}">SECOND
+    <div class="container__column blue" th:onclick="sendCommand('SECOND')"
+         th:text="${'SECOND: '+match.playerModelB.pits['SECOND']}">SECOND
     </div>
-    <div class="container__column" style="color:red;" th:text="${'THIRD: '+match.playerModelA.pits['THIRD']}">THIRD
+    <div class="container__column blue" th:onclick="sendCommand('THIRD')"
+         th:text="${'THIRD: '+match.playerModelB.pits['THIRD']}">THIRD
     </div>
-    <div class="container__column" style="color:red;" th:text="${'FOURTH: '+match.playerModelA.pits['FOURTH']}">FOURTH
+    <div class="container__column blue" th:onclick="sendCommand('FOURTH')"
+         th:text="${'FOURTH: '+match.playerModelB.pits['FOURTH']}">FOURTH
     </div>
-    <div class="container__column" style="color:red;" th:text="${'FIFTH: '+match.playerModelA.pits['FIFTH']}">FIFTH
+    <div class="container__column blue" th:onclick="sendCommand('FIFTH')"
+         th:text="${'FIFTH: '+match.playerModelB.pits['FIFTH']}">FIFTH
     </div>
-    <div class="container__column" style="color:red;" th:text="${'SIX: '+match.playerModelA.pits['SIX']}">SIX</div>
+    <div class="container__column blue" th:onclick="sendCommand('SIX')"
+         th:text="${'SIX: '+match.playerModelB.pits['SIX']}">SIX
+    </div>
+
+
+</div>
+<br/>
+__________________ <span th:text="${'It is player A turn == '+match.isPlayerATurn}"></span>____________________
+<br/>
+<br/>
+<div class="container">
+    Player A
+
+    <div class="container__column red" th:onclick="sendCommand('FIRST')"
+         th:text="${'FIRST: ' + match.playerModelA.pits['FIRST']}">FIRST
+    </div>
+    <div class="container__column red" th:onclick="sendCommand('SECOND')"
+         th:text="${'SECOND: ' + match.playerModelA.pits['SECOND']}">SECOND
+    </div>
+    <div class="container__column red" th:onclick="sendCommand('THIRD')"
+         th:text="${'THIRD: ' + match.playerModelA.pits['THIRD']}">THIRD
+    </div>
+    <div class="container__column red" th:onclick="sendCommand('FOURTH')"
+         th:text="${'FOURTH: ' + match.playerModelA.pits['FOURTH']}">FOURTH
+    </div>
+    <div class="container__column red" th:onclick="sendCommand('FIFTH')"
+         th:text="${'FIFTH: ' + match.playerModelA.pits['FIFTH']}">FIFTH
+    </div>
+    <div class="container__column red" th:onclick="sendCommand('SIX')"
+         th:text="${'SIX: '+ match.playerModelA.pits['SIX']}">SIX
+    </div>
 </div>
 
 
@@ -81,5 +103,52 @@ ______________________________________
 
 <script>
 
+    var currentPlayer = '';
+
+    window.onload = getCurrentPlayer;
+
+    function sendCommand(value){
+        if(currentPlayer === ''){
+            alert('You have not claimed a player yet');
+            return;
+        }
+
+        let matchId =  document.getElementById('matchIdTextField').value;
+        let url = `http://localhost:8080/v1/game/${matchId}/player/${currentPlayer}/command`;
+
+        let command = {
+            "pit": value
+        }
+
+        fetch(url,{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(command)
+        }).then(response =>{
+            document.getElementById("getStatsButton").click();
+        });
+
+    }
+
+
+    function setCurrentPlayer(value){
+        if(value === 'uniquePlayerIdA'){
+          currentPlayer = document.getElementById('uniquePlayerIdA').value;
+          document.getElementById('PlayerBBox').style.visibility = 'hidden';
+        } else if(value === 'uniquePlayerIdB'){
+          currentPlayer = document.getElementById('uniquePlayerIdB').value;
+          document.getElementById('PlayerABox').style.visibility = 'hidden';
+        }
+        document.getElementById('activePlayer').value = currentPlayer;
+        console.log(currentPlayer);
+    }
+
+    function getCurrentPlayer(){
+        console.log('getCurrentPlayer');
+        console.log(document.getElementById('activePlayer').value);
+        currentPlayer = document.getElementById('activePlayer').value;
+    }
 
 </script>

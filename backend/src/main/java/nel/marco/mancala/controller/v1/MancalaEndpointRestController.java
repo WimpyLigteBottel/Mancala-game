@@ -1,11 +1,12 @@
 package nel.marco.mancala.controller.v1;
 
+import lombok.extern.slf4j.Slf4j;
 import nel.marco.mancala.controller.v1.model.Command;
 import nel.marco.mancala.controller.v1.model.ErrorMessage;
+import nel.marco.mancala.controller.v1.model.Match;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
 import nel.marco.mancala.controller.v1.validator.MancalaEndpointValidator;
 import nel.marco.mancala.service.MancalaService;
-import nel.marco.mancala.controller.v1.model.Match;
 import nel.marco.mancala.service.exceptions.NotThatPlayerTurnException;
 import nel.marco.mancala.service.exceptions.UnknownPlayerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1")
+@Slf4j
+@CrossOrigin(origins = "http://localhost:9000")
 public class MancalaEndpointRestController {
 
 
@@ -41,12 +44,17 @@ public class MancalaEndpointRestController {
         playerB.setUsername("playerB");
         playerB.setUniqueId(UUID.randomUUID().toString());
 
-        return ResponseEntity.ok(mancalaService.createMatch(playerA, playerB));
+        Match match = mancalaService.createMatch(playerA, playerB);
+
+        log.info("newgame created [match={}]", match);
+        return ResponseEntity.ok(match);
     }
 
 
     @GetMapping("/game/{matchId}")
     public ResponseEntity<?> getMatchStats(@PathVariable(name = "matchId", required = true, value = "") String matchId) {
+        log.info("getMatchStats called [matchId={}]", matchId);
+
 
         if (matchId.trim().isBlank()) {
             return ResponseEntity.badRequest().body("'matchId' can not be null or empty");
@@ -65,6 +73,7 @@ public class MancalaEndpointRestController {
                                                @PathVariable(name = "matchId", required = true, value = "") String matchId,
                                                @PathVariable(name = "uniquePlayerId", required = true, value = "") String uniquePlayerId) {
 
+        log.info("updatePlayerStats called [matchId={};uniquePlayerId={};username={}]", matchId, uniquePlayerId, username);
 
         List<String> errors = mancalaEndpointValidator.validateUpdatePlayerRequest(username, matchId, uniquePlayerId);
 
@@ -83,9 +92,11 @@ public class MancalaEndpointRestController {
     }
 
     @PostMapping("/game/{matchId}/player/{uniquePlayerId}/command")
-    public ResponseEntity<?> executeCommand(@Validated @RequestBody Command command,
+    public ResponseEntity<?> executeCommand(@RequestBody Command command,
                                             @PathVariable(name = "matchId", required = true, value = "") String matchId,
                                             @PathVariable(name = "uniquePlayerId", required = true, value = "") String uniquePlayerId) {
+
+        log.info("executeCommand called [matchId={};uniquePlayerId={}]", matchId, uniquePlayerId);
 
         List<String> errors = mancalaEndpointValidator.validateExecuteCommand(command, matchId, uniquePlayerId);
 
