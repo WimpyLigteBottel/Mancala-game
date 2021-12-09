@@ -71,7 +71,9 @@
 
 </div>
 <br/>
-__________________ <span th:text="${'It is player A turn == '+match.isPlayerATurn}"></span>____________________
+_____<span th:text="${'Player A total == '+ match.playerModelA.totalScore}"/>
+_________ <span th:if="${match.isPlayerATurn}">PLAYER A TURN</span><span th:if="${!match.isPlayerATurn}">PLAYER B TURN</span>
+_____<span th:text="${'Player B total == '+ match.playerModelB.totalScore}"/>_________
 <br/>
 <br/>
 <div class="container">

@@ -144,12 +144,10 @@ public class MancalaService {
         Match updatedMatch;
         if (isPlayerATurn) {
             updatedMatch = moveLogicService.movingStones(true, command.getPit(), match);
-            updatedMatch.setPlayerATurn(false);
             updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
             updateMatch(updatedMatch);
         } else {
             updatedMatch = moveLogicService.movingStones(false, command.getPit(), match);
-            updatedMatch.setPlayerATurn(true);
             updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
             updateMatch(updatedMatch);
         }
@@ -161,6 +159,7 @@ public class MancalaService {
     private void updateMatch(Match updatedMatch) {
         updatedMatch.setLastStoneLocation(null);
         updatedMatch.setLastStonePlayerBoard(null);
+        updatedMatch.setStealable(false);
         internalMemoryMap.put(updatedMatch.getUniqueMatchId(), updatedMatch);
     }
 

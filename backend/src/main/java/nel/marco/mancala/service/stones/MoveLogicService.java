@@ -44,14 +44,15 @@ public class MoveLogicService {
                 totalStones--;
                 match.setLastStoneLocation(pit);
                 match.setLastStonePlayerBoard(Player.PLAYER1);
+                match.setStealable(true);
             }
 
             if (totalStones > 0) {
                 match.getPlayerModelA().setTotalScore(match.getPlayerModelA().getTotalScore() + 1);
                 match.setLastStoneLocation(PIT.PLAYER_1_BOARD);
                 match.setLastStonePlayerBoard(Player.PLAYER1);
-
                 totalStones--;
+                match.setStealable(false);
             }
 
             if (totalStones > 0) {
@@ -63,6 +64,7 @@ public class MoveLogicService {
                     totalStones--;
                     match.setLastStoneLocation(pit);
                     match.setLastStonePlayerBoard(Player.PLAYER2);
+                    match.setStealable(false);
                 }
             }
 
@@ -72,6 +74,7 @@ public class MoveLogicService {
                 totalStones--;
                 match.setLastStoneLocation(startingPoint);
                 match.setLastStonePlayerBoard(Player.PLAYER1);
+                match.setStealable(true);
             }
         }
 
@@ -92,6 +95,7 @@ public class MoveLogicService {
                 totalStones--;
                 match.setLastStoneLocation(pit);
                 match.setLastStonePlayerBoard(Player.PLAYER2);
+                match.setStealable(true);
             }
 
             if (totalStones > 0) {
@@ -99,10 +103,11 @@ public class MoveLogicService {
                 match.setLastStoneLocation(PIT.PLAYER_2_BOARD);
                 match.setLastStonePlayerBoard(Player.PLAYER2);
                 totalStones--;
+                match.setStealable(false);
             }
 
             if (totalStones > 0) {
-                for (int i = 1; i < 7; i--) {
+                for (int i = 1; i < 7; i++) {
                     if (totalStones == 0)
                         break;
                     PIT pit = PIT.valueOf(i);
@@ -110,6 +115,7 @@ public class MoveLogicService {
                     totalStones--;
                     match.setLastStoneLocation(pit);
                     match.setLastStonePlayerBoard(Player.PLAYER1);
+                    match.setStealable(false);
                 }
             }
 
@@ -119,6 +125,7 @@ public class MoveLogicService {
                 totalStones--;
                 match.setLastStoneLocation(startingPoint);
                 match.setLastStonePlayerBoard(Player.PLAYER2);
+                match.setStealable(true);
             }
         }
 
