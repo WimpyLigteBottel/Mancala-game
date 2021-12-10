@@ -71,14 +71,14 @@ public class SpecialTriggerLogicService {
         if (!updatedMatch.isStealable())
             return updatedMatch;
 
-        if (updatedMatch.isPlayerATurn() && lastStonePlayerBoard == Player.PLAYER1 && updatedMatch.isStealable()) {
+        if (updatedMatch.isPlayerATurn() && lastStonePlayerBoard == Player.PLAYER1) {
             PlayerModel activePlayer = updatedMatch.getPlayerModelA();
             PlayerModel opponent = updatedMatch.getPlayerModelB();
             Integer stonesInPit = activePlayer.getPits().get(lastStoneLocation);
             if (stonesInPit == 1) {
                 stealStones(lastStoneLocation, activePlayer, opponent);
             }
-        } else if (!updatedMatch.isPlayerATurn() && lastStonePlayerBoard == Player.PLAYER2 && updatedMatch.isStealable()) {
+        } else if (!updatedMatch.isPlayerATurn() && lastStonePlayerBoard == Player.PLAYER2) {
             PlayerModel activePlayer = updatedMatch.getPlayerModelB();
             PlayerModel opponent = updatedMatch.getPlayerModelA();
 

@@ -87,7 +87,7 @@ public class MancalaService {
         Map<PIT, Integer> initialBoardState = new HashMap<>();
 
         for (int i = 1; i < 7; i++) {
-            initialBoardState.put(PIT.valueOf(i), 4);
+            initialBoardState.put(PIT.valueOf(i), 6);
         }
 
         playerA.setPits(new HashMap<>(initialBoardState));

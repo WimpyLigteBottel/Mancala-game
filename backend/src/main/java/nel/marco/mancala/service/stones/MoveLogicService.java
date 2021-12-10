@@ -16,6 +16,10 @@ public class MoveLogicService {
 
     public Match movingStones(boolean isPlayerA, PIT pit, Match match) {
 
+        if (pit == PIT.PLAYER_1_BOARD || pit == PIT.PLAYER_2_BOARD) {
+            throw new InvalidMoveException("Can't move stones from your scoreboard");
+        }
+
         Map<PIT, Integer> activePlayer;
         Map<PIT, Integer> opponent;
 
