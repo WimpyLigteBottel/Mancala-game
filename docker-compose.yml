@@ -1,0 +1,25 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  backend:
+    container_name: marco-mancala-backend
+    build:
+        context: backend
+        dockerfile: ./backend/Dockerfile
+    image: backend:latest
+    ports:
+        - 8080:8080
+    networks:
+        - spring-cloud-network
+  frontend:
+    container_name: marco-mancala-frontend
+    build:
+        context: frontend
+        dockerfile: .\frontend\Dockerfile
+    image: frontend:latest
+    ports:
+        - 9000:9000
+    networks:
+        - spring-cloud-network
+networks:
+    spring-cloud-network:
+        driver: bridge

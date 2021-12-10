@@ -50,6 +50,21 @@ start java -jar mancala-frontend-1.0-SNAPSHOT.jar
 
 ```
 
+Docker:
+
+Note: you will need to update the frontend application.properties as follows
+
+file: frontend/src/main/resources/application.properties
+```properties
+backend.base.url=http://<insert your ip address>:8080/v1
+
+Example:
+backend.base.url=http://192.168.0.111:8080/v1
+```
+Reason for this is since you are starting up in separate docker containers it won't know how to talk to each other
+unless you setup the network correctly so that it can talk to each other
+
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
