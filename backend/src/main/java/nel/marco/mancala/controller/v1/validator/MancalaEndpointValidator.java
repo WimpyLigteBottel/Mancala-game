@@ -1,9 +1,10 @@
 package nel.marco.mancala.controller.v1.validator;
 
 import nel.marco.mancala.controller.v1.model.Command;
+import nel.marco.mancala.controller.v1.model.Match;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
 import nel.marco.mancala.service.MancalaService;
-import nel.marco.mancala.controller.v1.model.Match;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,8 +14,9 @@ import java.util.Optional;
 @Component
 public class MancalaEndpointValidator {
 
-    private MancalaService mancalaService;
+    private final MancalaService mancalaService;
 
+    @Autowired
     public MancalaEndpointValidator(MancalaService mancalaService) {
         this.mancalaService = mancalaService;
     }
@@ -35,13 +37,13 @@ public class MancalaEndpointValidator {
 
         Optional<Match> optionalMatch = mancalaService.getMatch(matchId);
 
-        if (!optionalMatch.isPresent()) {
+        if (optionalMatch.isEmpty()) {
             errors.add(String.format("Match does not exist [matchId=%s]", matchId));
         }
 
         Optional<PlayerModel> optionalPlayer = mancalaService.findPlayerInMatch(matchId, uniquePlayerId);
 
-        if (!optionalPlayer.isPresent()) {
+        if (optionalPlayer.isEmpty()) {
             errors.add(String.format("Could not find player [matchId=%s;uniquePlayerId=%s]", matchId, uniquePlayerId));
         }
 
@@ -74,13 +76,13 @@ public class MancalaEndpointValidator {
 
         Optional<Match> optionalMatch = mancalaService.getMatch(matchId);
 
-        if (!optionalMatch.isPresent()) {
+        if (optionalMatch.isEmpty()) {
             errors.add(String.format("Match does not exist [matchId=%s]", matchId));
         }
 
         Optional<PlayerModel> optionalPlayer = mancalaService.findPlayerInMatch(matchId, uniquePlayerId);
 
-        if (!optionalPlayer.isPresent()) {
+        if (optionalPlayer.isEmpty()) {
             errors.add(String.format("Could not find player [matchId=%s;uniquePlayerId=%s]", matchId, uniquePlayerId));
         }
 

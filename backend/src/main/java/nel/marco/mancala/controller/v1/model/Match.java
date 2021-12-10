@@ -11,6 +11,7 @@ public class Match {
 
     private boolean isPlayerATurn;
 
+
     private PIT lastStoneLocation;
     private Player lastStonePlayerBoard;
     private boolean isStealable;

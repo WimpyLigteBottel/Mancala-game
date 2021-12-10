@@ -13,7 +13,7 @@ public enum PIT {
     PLAYER_1_BOARD(100),
     PLAYER_2_BOARD(200);
 
-    private int pitIndex;
+    private final int pitIndex;
 
     PIT(int i) {
         this.pitIndex = i;
@@ -23,7 +23,6 @@ public enum PIT {
         return pitIndex;
     }
 
-
     public static PIT valueOf(int i) {
         return Arrays.stream(PIT.values())
                 .filter(pit -> pit.pitIndex == i)
@@ -31,6 +30,4 @@ public enum PIT {
                 .orElseThrow(() -> new RuntimeException("invalid pit selection [i=" + i + "]"));
 
     }
-
-
 }

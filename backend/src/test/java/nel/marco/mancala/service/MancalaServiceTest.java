@@ -129,10 +129,8 @@ class MancalaServiceTest {
 
     private Match createDefaultMatch(boolean isPlayerAStarting) {
         PlayerModel playerA = new PlayerModel();
-        playerA.setId(0);
         playerA.setUniqueId(UUID.randomUUID().toString());
         PlayerModel playerB = new PlayerModel();
-        playerB.setId(1);
         playerB.setUniqueId(UUID.randomUUID().toString());
         Match match = mancalaService.createMatch(playerA, playerB);
         match.setPlayerATurn(isPlayerAStarting);

@@ -19,18 +19,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1")
-@Slf4j
-@CrossOrigin(origins = "http://localhost:9000")
-public class MancalaEndpointRestController {
-
+@CrossOrigin(origins = "http://localhost:9000") // This is here to indicate I allow crossorgin request on methods
+public class MancalaEndpoint {
 
     private final MancalaService mancalaService;
     private final MancalaEndpointValidator mancalaEndpointValidator;
 
     @Autowired
-    public MancalaEndpointRestController(MancalaService mancalaService, MancalaEndpointValidator mancalaEndpointValidator) {
+    public MancalaEndpoint(MancalaService mancalaService, MancalaEndpointValidator mancalaEndpointValidator) {
         this.mancalaService = mancalaService;
         this.mancalaEndpointValidator = mancalaEndpointValidator;
     }
@@ -56,13 +55,12 @@ public class MancalaEndpointRestController {
     public ResponseEntity<?> getMatchStats(@PathVariable(name = "matchId", required = true, value = "") String matchId) {
         log.info("getMatchStats called [matchId={}]", matchId);
 
-
         if (matchId.trim().isBlank()) {
             return ResponseEntity.badRequest().body("'matchId' can not be null or empty");
         }
         Optional<Match> match = mancalaService.getMatch(matchId);
 
-        if (!match.isPresent())
+        if (match.isEmpty())
             return ResponseEntity.notFound().build();
 
         return ResponseEntity.ok(match.get());
@@ -70,11 +68,11 @@ public class MancalaEndpointRestController {
 
 
     @PutMapping("/game/{matchId}/player/{uniquePlayerId}")
-    public ResponseEntity<?> updatePlayerStats(@RequestParam(name = "username", required = true, value = "") String username,
-                                               @PathVariable(name = "matchId", required = true, value = "") String matchId,
-                                               @PathVariable(name = "uniquePlayerId", required = true, value = "") String uniquePlayerId) {
+    public ResponseEntity<?> updatePlayerUsername(@RequestParam(name = "username", required = true, value = "") String username,
+                                                  @PathVariable(name = "matchId", required = true, value = "") String matchId,
+                                                  @PathVariable(name = "uniquePlayerId", required = true, value = "") String uniquePlayerId) {
 
-        log.info("updatePlayerStats called [matchId={};uniquePlayerId={};username={}]", matchId, uniquePlayerId, username);
+        log.info("updatePlayerUsername called [matchId={};uniquePlayerId={};username={}]", matchId, uniquePlayerId, username);
 
         List<String> errors = mancalaEndpointValidator.validateUpdatePlayerRequest(username, matchId, uniquePlayerId);
 
@@ -88,8 +86,7 @@ public class MancalaEndpointRestController {
             playerModel.setUsername(username);
         });
 
-
-        return ResponseEntity.ok(String.format("Player has been updated [uniqueId=%s]", uniquePlayerId));
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/game/{matchId}/player/{uniquePlayerId}/command")
@@ -106,27 +103,21 @@ public class MancalaEndpointRestController {
         }
 
         try {
-            String updatedMatchId = mancalaService.executeCommand(command, matchId, uniquePlayerId);
-
-            return ResponseEntity.ok(updatedMatchId);
-        } catch (InvalidMoveException e) {
-            ErrorMessage errorMessage = new ErrorMessage();
-            errorMessage.addError("The move is invalid, try again");
-            return ResponseEntity.badRequest().body(errorMessage);
-        } catch (MatchIsOverException e) {
-            ErrorMessage errorMessage = new ErrorMessage();
-            errorMessage.addError("The match is over");
-            return ResponseEntity.badRequest().body(errorMessage);
-        } catch (NotThatPlayerTurnException e) {
-            ErrorMessage errorMessage = new ErrorMessage();
-            errorMessage.addError("Not your turn yet");
-            return ResponseEntity.badRequest().body(errorMessage);
-        } catch (UnknownPlayerException e) {
-            ErrorMessage errorMessage = new ErrorMessage();
-            errorMessage.addError("Unknown player");
-            return ResponseEntity.badRequest().body(errorMessage);
+            return ResponseEntity.ok(mancalaService.executeCommand(command, matchId, uniquePlayerId));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            ErrorMessage errorMessage = new ErrorMessage();
+
+            if (e instanceof UnknownPlayerException) {
+                errorMessage.addError("Unknown player");
+            } else if (e instanceof NotThatPlayerTurnException) {
+                errorMessage.addError("Not your turn yet");
+            } else if (e instanceof MatchIsOverException) {
+                errorMessage.addError("The match is over");
+            } else if (e instanceof InvalidMoveException) {
+                errorMessage.addError("The move is invalid, try again");
+            }
+
+            return ResponseEntity.internalServerError().body(errorMessage);
         }
 
     }

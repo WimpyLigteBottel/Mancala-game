@@ -1,14 +1,14 @@
 package nel.marco.mancala.controller.v1.model;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
 public class ErrorMessage {
 
-    List<String> errors;
+    private List<String> errors;
 
     public void addError(String message) {
 
