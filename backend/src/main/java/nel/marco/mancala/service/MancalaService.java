@@ -6,6 +6,7 @@ import nel.marco.mancala.controller.v1.model.Match;
 import nel.marco.mancala.controller.v1.model.PIT;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
 import nel.marco.mancala.service.exceptions.MatchDoesNotExistException;
+import nel.marco.mancala.service.exceptions.MatchIsOverException;
 import nel.marco.mancala.service.exceptions.NotThatPlayerTurnException;
 import nel.marco.mancala.service.exceptions.UnknownPlayerException;
 import nel.marco.mancala.service.stones.MoveLogicService;
@@ -120,6 +121,10 @@ public class MancalaService {
 
         if (match == null) {
             throw new MatchDoesNotExistException("This match does not exist");//TODO:Replace with proper Exception to indicate what the issue was
+        }
+
+        if (match.isGameOver()) {
+            throw new MatchIsOverException("This match is done");
         }
 
         PlayerModel playerModelA = match.getPlayerModelA();

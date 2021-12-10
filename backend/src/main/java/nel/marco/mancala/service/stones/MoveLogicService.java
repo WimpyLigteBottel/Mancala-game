@@ -3,6 +3,7 @@ package nel.marco.mancala.service.stones;
 import nel.marco.mancala.controller.v1.model.Match;
 import nel.marco.mancala.controller.v1.model.PIT;
 import nel.marco.mancala.controller.v1.model.Player;
+import nel.marco.mancala.service.exceptions.InvalidMoveException;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -34,6 +35,10 @@ public class MoveLogicService {
             match, Map<PIT, Integer> activePlayer, Map<PIT, Integer> opponent) {
         int totalStones = activePlayer.get(startingPoint);
         activePlayer.put(startingPoint, 0);
+
+        if (totalStones == 0) {
+            throw new InvalidMoveException("This match is done");
+        }
 
         while (totalStones > 0) {
             for (int i = startingPoint.getPitIndex() + 1; i < 7; i++) {
@@ -85,6 +90,10 @@ public class MoveLogicService {
     private Match moveStonesToForPlayerB(PIT startingPoint, Match match, Map<PIT, Integer> activePlayer, Map<PIT, Integer> opponent) {
         int totalStones = activePlayer.get(startingPoint);
         activePlayer.put(startingPoint, 0);
+
+        if (totalStones == 0) {
+            throw new InvalidMoveException("This match is done");
+        }
 
         while (totalStones > 0) {
             for (int i = startingPoint.getPitIndex() - 1; i > 0; i--) {

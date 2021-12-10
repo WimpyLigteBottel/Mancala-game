@@ -7,6 +7,8 @@ import nel.marco.mancala.controller.v1.model.Player;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @Slf4j
 public class SpecialTriggerLogicService {
@@ -15,8 +17,48 @@ public class SpecialTriggerLogicService {
         //Capture stones if last stones is placed in open spot
         updatedMatch = captureStones(updatedMatch);
 
+        updatedMatch = isGameOver(updatedMatch);
+
+        if (updatedMatch.isGameOver()) {
+            return updatedMatch;
+        }
+
         //If last stone is in totalScore gets extra turn
         updatedMatch = getExtraTurn(updatedMatch);
+
+        return updatedMatch;
+    }
+
+    private Match isGameOver(Match updatedMatch) {
+
+
+        Map<PIT, Integer> playerAPits = updatedMatch.getPlayerModelA().getPits();
+        Map<PIT, Integer> playerBPits = updatedMatch.getPlayerModelB().getPits();
+
+
+        updatedMatch = isGameOver(updatedMatch, playerAPits, playerBPits);
+        updatedMatch = isGameOver(updatedMatch, playerBPits, playerAPits);
+
+        return updatedMatch;
+    }
+
+    private Match isGameOver(Match updatedMatch, Map<PIT, Integer> activePlayer, Map<PIT, Integer> opponent) {
+        boolean isFieldClear = true;
+        for (int i = 1; i < 7; i++) {
+            if (activePlayer.get(PIT.valueOf(i)) != 0) {
+                isFieldClear = false;
+            }
+        }
+
+        if (isFieldClear) {
+            int addUpRemainingStones = opponent.values().stream().mapToInt(Integer::intValue).sum();
+            for (int i = 1; i < 7; i++) {
+                opponent.put(PIT.valueOf(i), 0);
+            }
+            long totalScore = updatedMatch.getPlayerModelB().getTotalScore();
+            updatedMatch.getPlayerModelB().setTotalScore(totalScore + addUpRemainingStones);
+            updatedMatch.setGameOver(true);
+        }
 
         return updatedMatch;
     }
@@ -52,10 +94,14 @@ public class SpecialTriggerLogicService {
     private void stealStones(PIT lastStoneLocation, PlayerModel activePlayer, PlayerModel opponent) {
         log.info("Stealing stones [stoneLocation={};]", lastStoneLocation);
         Integer stonesBeingStolen = opponent.getPits().get(lastStoneLocation);
-        opponent.getPits().put(lastStoneLocation, 0);
 
-        activePlayer.setTotalScore(activePlayer.getTotalScore() + activePlayer.getPits().get(lastStoneLocation) + stonesBeingStolen);
-        activePlayer.getPits().put(lastStoneLocation, 0);
+        if(stonesBeingStolen> 0){
+            opponent.getPits().put(lastStoneLocation, 0);
+
+            activePlayer.setTotalScore(activePlayer.getTotalScore() + activePlayer.getPits().get(lastStoneLocation) + stonesBeingStolen);
+            activePlayer.getPits().put(lastStoneLocation, 0);
+        }
+
     }
 
     private Match getExtraTurn(Match updatedMatch) {

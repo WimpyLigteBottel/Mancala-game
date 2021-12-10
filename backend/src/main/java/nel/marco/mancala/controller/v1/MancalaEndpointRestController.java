@@ -7,11 +7,12 @@ import nel.marco.mancala.controller.v1.model.Match;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
 import nel.marco.mancala.controller.v1.validator.MancalaEndpointValidator;
 import nel.marco.mancala.service.MancalaService;
+import nel.marco.mancala.service.exceptions.InvalidMoveException;
+import nel.marco.mancala.service.exceptions.MatchIsOverException;
 import nel.marco.mancala.service.exceptions.NotThatPlayerTurnException;
 import nel.marco.mancala.service.exceptions.UnknownPlayerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -108,6 +109,14 @@ public class MancalaEndpointRestController {
             String updatedMatchId = mancalaService.executeCommand(command, matchId, uniquePlayerId);
 
             return ResponseEntity.ok(updatedMatchId);
+        } catch (InvalidMoveException e) {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.addError("The move is invalid, try again");
+            return ResponseEntity.badRequest().body(errorMessage);
+        } catch (MatchIsOverException e) {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.addError("The match is over");
+            return ResponseEntity.badRequest().body(errorMessage);
         } catch (NotThatPlayerTurnException e) {
             ErrorMessage errorMessage = new ErrorMessage();
             errorMessage.addError("Not your turn yet");

@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Marco: Macala</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="css/styles.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div style="margin-left:auto;margin-right:auto;">
+    <form action="#" th:action="@{/createnewgame}" method="get">
+        <span><input type="submit" value="create new game"/></span>
+    </form>
+</div>
+
+<div class="container">
+    <br/>
+    <br/>
+    <div>
+
+        <span>THE GAME IS OVER!!!!</span>
+        <br/>
+        <br/>
+        <span th:text="${'Player A total == '+ match.playerModelA.totalScore}"></span> <br/><br/>
+        <span th:text="${'Player B total == '+ match.playerModelB.totalScore}"></span>
+        <br/><br/>
+        <span>WHO WINS???</span>
+        <br/><br/>
+        <span th:if="${match.playerModelA.totalScore > match.playerModelB.totalScore}">PLAYER A</span>
+        <span th:if="${match.playerModelA.totalScore < match.playerModelB.totalScore}">PLAYER B</span>
+        <span th:if="${match.playerModelA.totalScore == match.playerModelB.totalScore}">ITS A DRAW</span>
+
+    </div>
+</div>
+</body>
+</html>
