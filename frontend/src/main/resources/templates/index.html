@@ -153,4 +153,12 @@ _____<span th:text="${'Player B total == '+ match.playerModelB.totalScore}"/>___
         currentPlayer = document.getElementById('activePlayer').value;
     }
 
+    setInterval(function() {
+        if(currentPlayer !== ''){
+            document.getElementById("getStatsButton").click();
+        }
+    }, 1000 * 3);
+
+
+
 </script>
