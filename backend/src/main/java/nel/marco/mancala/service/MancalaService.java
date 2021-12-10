@@ -20,8 +20,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
+/**
+ * This class handles the core business logic to handle command requests from the user (aka player)
+ */
 @Slf4j
+@Service
 public class MancalaService {
 
     private final MoveLogicService moveLogicService;
@@ -34,14 +37,15 @@ public class MancalaService {
         this.specialTriggerLogicService = specialTriggerLogicService;
     }
 
-    private Map<String, Match> internalMemoryMap = new ConcurrentHashMap<>();
+    //Note: I decided with internal memory map for now but going to change it in the future to database requests
+    private final Map<String, Match> internalMemoryMap = new ConcurrentHashMap<>();
 
 
     /**
-     * Find current active matches
+     * Find current active match
      *
-     * @param uniqueMatch
-     * @return
+     * @param uniqueMatch The match unique id
+     * @return {@link Optional<Match>} Optional of searched for Match
      */
     public Optional<Match> getMatch(String uniqueMatch) {
         return Optional.ofNullable(internalMemoryMap.get(uniqueMatch));
@@ -50,13 +54,11 @@ public class MancalaService {
     /**
      * Tries to find the player in the match
      *
-     * @param matchId
-     * @param uniquePlayerId
-     * @return
+     * @param matchId        The match unique id
+     * @param uniquePlayerId The player id that you are trying to find in specific match
+     * @return {@link Optional<PlayerModel>} Optional of the playerModel
      */
     public Optional<PlayerModel> findPlayerInMatch(String matchId, String uniquePlayerId) {
-
-
         Optional<Match> match = getMatch(matchId);
 
         if (match.isEmpty()) {
@@ -80,7 +82,7 @@ public class MancalaService {
      * Sets up the boardstate for both players.
      *
      * @param playerA The player A (first player)
-     * @param playerB The player A (first player)
+     * @param playerB The player B (second player)
      */
     public Match createMatch(PlayerModel playerA, PlayerModel playerB) {
 
@@ -106,21 +108,41 @@ public class MancalaService {
 
     /**
      * 1. Finds the match based on the command's match ID
-     * 2. Find out who's turn it is and make sure that its the correct players command
+     * 2. Do basic validation on input (does match exist + command valid + correct player turn)
      * 3. Execute the logic to move the stones accordingly
      * 4. Update the match stats
      *
      * @param command        The command form the player
-     * @param matchId
-     * @param uniquePlayerId
-     * @return
+     * @param matchId        The match unique id
+     * @param uniquePlayerId The uniquePlayer id that's playing
+     * @return {@link String} returns the match unique id
      */
     public String executeCommand(Command command, String matchId, String uniquePlayerId) {
 
         Match match = internalMemoryMap.get(matchId);
 
+        validate(command, uniquePlayerId, match);
+
+        Match updatedMatch;
+        updatedMatch = moveLogicService.movingStones(match.isPlayerATurn(), command.getPit(), match);
+        updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
+        updateMatch(updatedMatch);
+
+        return match.getUniqueMatchId();
+    }
+
+    /**
+     * Does basic checks to see if the command is valid and if it can be executed against current match.
+     * <p>
+     * If invalid command is found then throw invalid exception
+     *
+     * @param command        The player command to move stones
+     * @param uniquePlayerId The unique player id that making the move
+     * @param match          The match details
+     */
+    private void validate(Command command, String uniquePlayerId, Match match) {
         if (match == null) {
-            throw new MatchDoesNotExistException("This match does not exist");//TODO:Replace with proper Exception to indicate what the issue was
+            throw new MatchDoesNotExistException("This match does not exist");
         }
 
         if (match.isGameOver()) {
@@ -134,7 +156,7 @@ public class MancalaService {
         boolean isPlayerB = uniquePlayerId.equals(playerModelB.getUniqueId());
 
         if (!isPlayerA && !isPlayerB) {
-            throw new UnknownPlayerException("Unknown player ->" + uniquePlayerId); //TODO: make this more clear and add the player
+            throw new UnknownPlayerException("Unknown player ->" + uniquePlayerId);
         }
 
         //NOTE: the isPlayerA is like safetyCheck to make sure its not someone else trying to cheat ;)
@@ -142,30 +164,21 @@ public class MancalaService {
         boolean isPlayerBTurn = isPlayerB && !match.isPlayerATurn();
 
         if ((isPlayerA && !isPlayerATurn || isPlayerB && !isPlayerBTurn)) {
-            log.error("INVALID PLAYER COMMAND!!! [playerId={};command={}]", uniquePlayerId, command.getPit()); // TODO: handle this more nicely*
+            log.error("INVALID PLAYER COMMAND!!! [playerId={};command={}]", uniquePlayerId, command.getPit());
             throw new NotThatPlayerTurnException("Not that player turn yet");
         }
-
-        Match updatedMatch;
-        if (isPlayerATurn) {
-            updatedMatch = moveLogicService.movingStones(true, command.getPit(), match);
-            updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
-            updateMatch(updatedMatch);
-        } else {
-            updatedMatch = moveLogicService.movingStones(false, command.getPit(), match);
-            updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
-            updateMatch(updatedMatch);
-        }
-
-        return match.getUniqueMatchId();
     }
 
-
-    private void updateMatch(Match updatedMatch) {
-        updatedMatch.setLastStoneLocation(null);
-        updatedMatch.setLastStonePlayerBoard(null);
-        updatedMatch.setStealable(false);
-        internalMemoryMap.put(updatedMatch.getUniqueMatchId(), updatedMatch);
+    /**
+     * Wipes clean certain state from the match object and updating internal map state
+     *
+     * @param match
+     */
+    private void updateMatch(Match match) {
+        match.setLastStoneLocation(null);
+        match.setLastStonePlayerBoard(null);
+        match.setStealable(false);
+        internalMemoryMap.put(match.getUniqueMatchId(), match);
     }
 
 

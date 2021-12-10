@@ -125,6 +125,8 @@ public class MancalaEndpointRestController {
             ErrorMessage errorMessage = new ErrorMessage();
             errorMessage.addError("Unknown player");
             return ResponseEntity.badRequest().body(errorMessage);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
 
     }
