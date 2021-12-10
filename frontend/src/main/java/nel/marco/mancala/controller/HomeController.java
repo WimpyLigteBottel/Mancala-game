@@ -1,61 +1,69 @@
 package nel.marco.mancala.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import nel.marco.mancala.model.Match;
-import org.springframework.http.ResponseEntity;
+import nel.marco.mancala.controller.v1.model.Match;
+import nel.marco.mancala.service.MatchService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
 
-@Controller
 @Slf4j
+@Controller
 public class HomeController {
 
-    @GetMapping("/index")
-    public String greeting(Model model) {
+    private final MatchService matchService;
 
-        if (model.getAttribute("match") == null) {
-            ResponseEntity<Match> forEntity = new RestTemplate().getForEntity("http://localhost:8080/v1/newgame", Match.class);
-            Match match = forEntity.getBody();
-            model.addAttribute("match", match);
+    @Autowired
+    public HomeController(MatchService matchService) {
+        this.matchService = matchService;
+    }
+
+    @GetMapping("/")
+    public String landingPage(
+            @RequestParam(value = "activePlayer", required = false, defaultValue = "") String activePlayer,
+            @RequestParam(value = "uniqueMatchId", required = false) String uniqueMatchId,
+            Model model) {
+
+        if (uniqueMatchId == null) {
+            return createNewGame(model);
         }
-        model.addAttribute("activePlayer", "");
-        log.info("index");
+
+        try {
+            Match matchStats = matchService.getMatchStats(uniqueMatchId);
+            model.addAttribute("match", matchStats);
+            model.addAttribute("activePlayer", activePlayer);
+
+            if (matchStats.isGameOver()) {
+                log.info("Displaying gameover screen [matchId={}]", matchStats.getUniqueMatchId());
+                return "gameover";
+            }
+
+        } catch (Exception e) {
+            log.error("getMatchStats failed [activePlayer={};uniqueMatchId={}]", activePlayer, uniqueMatchId);
+            model.addAttribute("error", "Backend failed, try again when server is back up [matchId=" + uniqueMatchId + "]");
+            return "error";
+        }
+
+
         return "index";
     }
 
     @GetMapping("/createnewgame")
     public String createNewGame(Model model) {
 
-        ResponseEntity<Match> forEntity = new RestTemplate().getForEntity("http://localhost:8080/v1/newgame", Match.class);
-        Match body = forEntity.getBody();
-        model.addAttribute("match", body);
-
-        log.info("createnewgame");
-        return "index";
-    }
-
-    @GetMapping("/getMatch")
-    public String getMatchStats(
-            @RequestParam(value = "activePlayer", required = false) String activePlayer,
-            @RequestParam(value = "uniqueMatchId", required = false) String uniqueMatchId, Model model) {
-
-        ResponseEntity<Match> forEntity = new RestTemplate().getForEntity("http://localhost:8080/v1/game/" + uniqueMatchId, Match.class);
-        Match updatedMatch = forEntity.getBody();
-
-        model.addAttribute("match", updatedMatch);
-        model.addAttribute("activePlayer", activePlayer);
-
-        if (updatedMatch.isGameOver()) {
-            log.info("getMatch");
-            return "gameover";
+        try {
+            Match newGame = matchService.createNewGame();
+            model.addAttribute("match", newGame);
+            model.addAttribute("activePlayer", "");
+            log.info("Creating a new game [matchId={}]", newGame.getUniqueMatchId());
+            return "index";
+        } catch (Exception e) {
+            log.error("Creating a new game failed");
+            model.addAttribute("error", "Could not create new game");
+            return "error";
         }
 
-
-
-        log.info("getMatch");
-        return "index";
     }
 }
