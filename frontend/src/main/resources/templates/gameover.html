@@ -13,7 +13,7 @@
     </form>
 </div>
 
-<div class="container">
+<div class="container resultBoard">
     <br/>
     <br/>
     <div>
@@ -21,14 +21,14 @@
         <span>THE GAME IS OVER!!!!</span>
         <br/>
         <br/>
-        <span th:text="${'Player A total == '+ match.playerModelA.totalScore}"></span> <br/><br/>
-        <span th:text="${'Player B total == '+ match.playerModelB.totalScore}"></span>
+        <span th:text="${'Player A  == '+ match.playerModelA.totalScore}"></span> <br/>
+        <span th:text="${'Player B  == '+ match.playerModelB.totalScore}"></span>
         <br/><br/>
         <span>WHO WINS???</span>
         <br/><br/>
-        <span th:if="${match.playerModelA.totalScore > match.playerModelB.totalScore}">PLAYER A</span>
-        <span th:if="${match.playerModelA.totalScore < match.playerModelB.totalScore}">PLAYER B</span>
-        <span th:if="${match.playerModelA.totalScore == match.playerModelB.totalScore}">ITS A DRAW</span>
+        <span class="playerATextColor" th:if="${match.playerModelA.totalScore > match.playerModelB.totalScore}">PLAYER A</span>
+        <span class="playerBTextColor" th:if="${match.playerModelA.totalScore < match.playerModelB.totalScore}">PLAYER B</span>
+        <span class="" th:if="${match.playerModelA.totalScore == match.playerModelB.totalScore}">ITS A DRAW</span>
 
     </div>
 </div>

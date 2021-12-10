@@ -25,78 +25,86 @@
 <br/>
 <br/>
 <div class="container">
-    <div id="PlayerABox" style="display:flex" th:if="${activePlayer != match.playerModelB.uniqueId}">
-        <span>Player A:&nbsp;</span>
-        <span><input id="uniquePlayerIdA" th:field="${match.playerModelA.uniqueId}" type="text" size="35"/></span>
-        <span><button type="button" th:onclick="setCurrentPlayer('uniquePlayerIdA')">claim</button></span>
+
+    <div class="column brownboard">
+        <div id="PlayerABox" style="display:flex" th:if="${activePlayer != match.playerModelB.uniqueId}">
+            <span class="playerATextColor">Player A:&nbsp;</span>
+            <span><input id="uniquePlayerIdA" th:field="${match.playerModelA.uniqueId}" type="text" size="35"/></span>
+            <span><button type="button" th:onclick="setCurrentPlayer('uniquePlayerIdA')">claim</button></span>
+        </div>
     </div>
 
-    <div id="PlayerBBox" style="display:flex" th:if="${activePlayer != match.playerModelA.uniqueId}">
-        <span>Player B:&nbsp;</span>
-        <span><input id="uniquePlayerIdB" th:field="${match.playerModelB.uniqueId}" type="text" size="35"/></span>
-        <span><button type="button" th:onclick="setCurrentPlayer('uniquePlayerIdB')">claim</button></span>
+    <div class="column brownboard">
+        <div id="PlayerBBox" style="display:flex" th:if="${activePlayer != match.playerModelA.uniqueId}">
+            <span class="playerBTextColor">Player B:&nbsp;</span>
+            <span><input id="uniquePlayerIdB" th:field="${match.playerModelB.uniqueId}" type="text" size="35"/></span>
+            <span><button type="button" th:onclick="setCurrentPlayer('uniquePlayerIdB')">claim</button></span>
+        </div>
+    </div>
+
+</div>
+<br/>
+<div class="container">
+    <div class="column brownboard">
+        <span th:if="${match.isPlayerATurn}" class="playerATextColor">PLAYER A TURN</span>
+        <span th:if="${!match.isPlayerATurn}" class="playerBTextColor">PLAYER B TURN</span>
     </div>
 </div>
 <br/>
 <div class="container">
-    <span th:if="${match.isPlayerATurn}" class="red">PLAYER A TURN</span>
-    <span th:if="${!match.isPlayerATurn}" class="blue">PLAYER B TURN</span>
-</div>
-<br/>
-<div class="container">
-    <div class="column score">
-            <span id="playerAScore" class="blue score"
+    <div class="column score brownboard">
+            <span id="playerAScore" class="playerBTextColor score"
                   th:text="${'Score: ' + match.playerModelB.totalScore}"></span><br/>
-        <span id="playerAScorePool" class="blue score" th:text="${match.playerModelB.totalScore}"></span>
+        <span id="playerAScorePool" class="playerBTextColor score" th:text="${match.playerModelB.totalScore}"></span>
     </div>
-    <div class="column">
-        <div class="container blue">
-            <div class="column pointer" th:text="${'FIRST: '+ match.playerModelB.pits['FIRST']}"
+    <div class="column brownboard">
+        <div class="container playerBTextColor">
+            <div class="column pointer pit" th:text="${match.playerModelB.pits['FIRST']}"
                  th:onclick="sendCommand('FIRST')">FIRST
             </div>
-            <div class="column pointer" th:onclick="sendCommand('SECOND')"
-                 th:text="${'SECOND: '+match.playerModelB.pits['SECOND']}">SECOND
+            <div class="column pointer pit" th:onclick="sendCommand('SECOND')"
+                 th:text="${match.playerModelB.pits['SECOND']}">SECOND
             </div>
-            <div class="column pointer" th:onclick="sendCommand('THIRD')"
-                 th:text="${'THIRD: '+match.playerModelB.pits['THIRD']}">THIRD
+            <div class="column pointer pit" th:onclick="sendCommand('THIRD')"
+                 th:text="${match.playerModelB.pits['THIRD']}">THIRD
             </div>
-            <div class="column pointer" th:onclick="sendCommand('FOURTH')"
-                 th:text="${'FOURTH: '+match.playerModelB.pits['FOURTH']}">FOURTH
+            <div class="column pointer pit" th:onclick="sendCommand('FOURTH')"
+                 th:text="${match.playerModelB.pits['FOURTH']}">FOURTH
             </div>
-            <div class="column pointer" th:onclick="sendCommand('FIFTH')"
-                 th:text="${'FIFTH: '+match.playerModelB.pits['FIFTH']}">FIFTH
+            <div class="column pointer pit" th:onclick="sendCommand('FIFTH')"
+                 th:text="${match.playerModelB.pits['FIFTH']}">FIFTH
             </div>
-            <div class="column pointer" th:onclick="sendCommand('SIX')"
-                 th:text="${'SIX: '+match.playerModelB.pits['SIX']}">SIX
+            <div class="column pointer pit" th:onclick="sendCommand('SIX')"
+                 th:text="${match.playerModelB.pits['SIX']}">SIX
             </div>
         </div>
         <br/>
         <br/>
         <br/>
-        <div class="container red">
-            <div class="column pointer" th:onclick="sendCommand('FIRST')"
-                 th:text="${'FIRST: ' + match.playerModelA.pits['FIRST']}">FIRST
+        <div class="container playerATextColor">
+            <div class="column pointer pit" th:onclick="sendCommand('FIRST')"
+                 th:text="${match.playerModelA.pits['FIRST']}">FIRST
             </div>
-            <div class="column pointer" th:onclick="sendCommand('SECOND')"
-                 th:text="${'SECOND: ' + match.playerModelA.pits['SECOND']}">SECOND
+            <div class="column pointer pit" th:onclick="sendCommand('SECOND')"
+                 th:text="${match.playerModelA.pits['SECOND']}">SECOND
             </div>
-            <div class="column pointer" th:onclick="sendCommand('THIRD')"
-                 th:text="${'THIRD: ' + match.playerModelA.pits['THIRD']}">THIRD
+            <div class="column pointer pit" th:onclick="sendCommand('THIRD')"
+                 th:text="${match.playerModelA.pits['THIRD']}">THIRD
             </div>
-            <div class="column pointer" th:onclick="sendCommand('FOURTH')"
-                 th:text="${'FOURTH: ' + match.playerModelA.pits['FOURTH']}">FOURTH
+            <div class="column pointer pit" th:onclick="sendCommand('FOURTH')"
+                 th:text="${ match.playerModelA.pits['FOURTH']}">FOURTH
             </div>
-            <div class="column pointer" th:onclick="sendCommand('FIFTH')"
-                 th:text="${'FIFTH: ' + match.playerModelA.pits['FIFTH']}">FIFTH
+            <div class="column pointer pit" th:onclick="sendCommand('FIFTH')"
+                 th:text="${match.playerModelA.pits['FIFTH']}">FIFTH
             </div>
-            <div class="column pointer" th:onclick="sendCommand('SIX')"
-                 th:text="${'SIX: '+ match.playerModelA.pits['SIX']}">SIX
+            <div class="column pointer pit" th:onclick="sendCommand('SIX')"
+                 th:text="${match.playerModelA.pits['SIX']}">SIX
             </div>
         </div>
     </div>
-    <div class="column score">
-        <span id="playerBScore" class="red" th:text="${'Score: ' + match.playerModelA.totalScore}"></span> <br/>
-        <span id="playerBScorePool" class="red" th:text="${match.playerModelA.totalScore}" value="[]"></span>
+    <div class="column score brownboard">
+        <span id="playerBScore" class="playerATextColor" th:text="${'Score: ' + match.playerModelA.totalScore}"></span> <br/>
+        <span id="playerBScorePool" class="playerATextColor" th:text="${match.playerModelA.totalScore}"></span>
     </div>
 </div>
 </body>
