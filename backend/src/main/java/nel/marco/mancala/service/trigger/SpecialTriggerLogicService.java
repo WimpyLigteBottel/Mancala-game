@@ -16,67 +16,85 @@ import org.springframework.stereotype.Service;
 @Service
 public class SpecialTriggerLogicService {
 
-    public Match hasSpecialLogicTriggered(Match updatedMatch) {
+    /**
+     * The base method to check against all special rules for
+     * a match and executes rules if any of the special rules should trigger
+     *
+     * @param match
+     * @return
+     */
+    public Match hasSpecialLogicTriggered(Match match) {
 
-        captureStones(updatedMatch);
+        captureStones(match);
 
-        updatedMatch = isGameOver(updatedMatch);
+        checkIfTheGameIsOver(match);
 
-        if (updatedMatch.isGameOver()) {
-            return updatedMatch;
+        if (match.isGameOver()) {
+            return match;
         }
 
-        updatedMatch = seeIfSomeoneGetsExtraTurn(updatedMatch);
+        seeIfSomeoneGetsExtraTurn(match);
 
-        return updatedMatch;
+        return match;
     }
 
-    private Match isGameOver(Match updatedMatch) {
-
-        updatedMatch = isGameOver(updatedMatch, updatedMatch.getPlayerModelA(), updatedMatch.getPlayerModelB());
-        updatedMatch = isGameOver(updatedMatch, updatedMatch.getPlayerModelB(), updatedMatch.getPlayerModelA());
-
-        return updatedMatch;
+    /**
+     * Checks the if the game is over for the players.
+     *
+     * @param match
+     */
+    private void checkIfTheGameIsOver(Match match) {
+        handleGameOverLogic(match, match.getPlayerModelA(), match.getPlayerModelB());
+        handleGameOverLogic(match, match.getPlayerModelB(), match.getPlayerModelA());
     }
 
-    private Match isGameOver(Match updatedMatch, PlayerModel activePlayer, PlayerModel opponent) {
-        boolean isFieldClear = true;
-        for (int i = 1; i < 7; i++) {
+    /**
+     * First checks if the activePlayer board is empty (aka 0,0,0,0,0) and if it is. Add up all the remaining
+     * stones on the opponent board and add it to his totalscore
+     *
+     * @param updatedMatch
+     * @param activePlayer
+     * @param opponent
+     */
+    private void handleGameOverLogic(Match updatedMatch, PlayerModel activePlayer, PlayerModel opponent) {
+        for (int i = 1; i <= 6; i++) {
             if (activePlayer.getPits().get(PIT.valueOf(i)) != 0) {
-                isFieldClear = false;
+                return;
             }
         }
 
-        if (isFieldClear) {
-            int addUpRemainingStones = opponent.getPits().values().stream().mapToInt(Integer::intValue).sum();
-            for (int i = 1; i < 7; i++) {
-                opponent.getPits().put(PIT.valueOf(i), 0);
-            }
-            long totalScore = opponent.getTotalScore();
-            opponent.setTotalScore(totalScore + addUpRemainingStones);
-            updatedMatch.setGameOver(true);
+        int addUpRemainingStones = opponent.getPits().values().stream().mapToInt(Integer::intValue).sum();
+        for (int i = 1; i <= 6; i++) {
+            opponent.getPits().put(PIT.valueOf(i), 0);
         }
-
-        return updatedMatch;
+        long totalScore = opponent.getTotalScore();
+        opponent.setTotalScore(totalScore + addUpRemainingStones);
+        updatedMatch.setGameOver(true);
     }
 
-    private void captureStones(Match updatedMatch) {
-        PIT lastStoneLocation = updatedMatch.getLastStoneLocation();
-        Player lastStonePlayerBoard = updatedMatch.getLastStonePlayerBoard();
+    /**
+     * Checks the games state and see if stones should be captured or not.
+     * <p>
+     * If stones MUST be captured then capture the stones accordingly
+     *
+     * @param match The game state
+     */
+    private void captureStones(Match match) {
+        PIT lastStoneLocation = match.getLastStoneLocation();
+        Player lastStonePlayerBoard = match.getLastStonePlayerBoard();
 
-        //You can't capture if it was in score pit
-        if (!updatedMatch.isStealable())
+        if (!match.isStealable())
             return;
 
         PlayerModel activePlayer = null;
         PlayerModel opponent = null;
 
-        if (updatedMatch.isPlayerATurn() && lastStonePlayerBoard == Player.PLAYER1) {
-            activePlayer = updatedMatch.getPlayerModelA();
-            opponent = updatedMatch.getPlayerModelB();
-        } else if (!updatedMatch.isPlayerATurn() && lastStonePlayerBoard == Player.PLAYER2) {
-            activePlayer = updatedMatch.getPlayerModelB();
-            opponent = updatedMatch.getPlayerModelA();
+        if (match.isPlayerATurn() && lastStonePlayerBoard == Player.PLAYER1) {
+            activePlayer = match.getPlayerModelA();
+            opponent = match.getPlayerModelB();
+        } else if (!match.isPlayerATurn() && lastStonePlayerBoard == Player.PLAYER2) {
+            activePlayer = match.getPlayerModelB();
+            opponent = match.getPlayerModelA();
         }
 
         if (activePlayer == null || opponent == null)
@@ -88,6 +106,13 @@ public class SpecialTriggerLogicService {
         }
     }
 
+    /**
+     * Moving the stones to scoreboard of active player and clear both pits that was captured
+     *
+     * @param lastStoneLocation
+     * @param activePlayer
+     * @param opponent
+     */
     private void stealStones(PIT lastStoneLocation, PlayerModel activePlayer, PlayerModel opponent) {
         Integer stonesBeingStolen = opponent.getPits().get(lastStoneLocation);
 
@@ -101,21 +126,27 @@ public class SpecialTriggerLogicService {
 
     }
 
-    private Match seeIfSomeoneGetsExtraTurn(Match updatedMatch) {
-        PIT lastStoneLocation = updatedMatch.getLastStoneLocation();
-        Player lastStonePlayerBoard = updatedMatch.getLastStonePlayerBoard();
+    /**
+     * Handles the logic around turns for players. If player last stones landed in the scoreboard.
+     * They will get extra turn.
+     * <p>
+     * Note: This can happen many times
+     *
+     * @param match
+     */
+    private void seeIfSomeoneGetsExtraTurn(Match match) {
+        PIT lastStoneLocation = match.getLastStoneLocation();
+        Player lastStonePlayerBoard = match.getLastStonePlayerBoard();
 
         if (lastStoneLocation == PIT.PLAYER_1_BOARD && lastStonePlayerBoard == Player.PLAYER1) {
-            updatedMatch.setPlayerATurn(true);
-            log.info("gets extra turn  [matchId={};player={}]", updatedMatch.getUniqueMatchId(), "A");
+            match.setPlayerATurn(true);
+            log.info("gets extra turn  [matchId={};player={}]", match.getUniqueMatchId(), match.getPlayerModelA().getUniqueId());
         } else if (lastStoneLocation == PIT.PLAYER_2_BOARD && lastStonePlayerBoard == Player.PLAYER2) {
-            log.info("gets extra turn  [matchId={};player={}]", updatedMatch.getUniqueMatchId(), "B");
-            updatedMatch.setPlayerATurn(false);
+            match.setPlayerATurn(false);
+            log.info("gets extra turn  [matchId={};player={}]", match.getUniqueMatchId(), match.getPlayerModelB().getUniqueId());
         } else {
-            updatedMatch.setPlayerATurn(!updatedMatch.isPlayerATurn());
+            match.setPlayerATurn(!match.isPlayerATurn());
         }
-
-        return updatedMatch;
     }
 
 }
