@@ -4,8 +4,10 @@ import nel.marco.mancala.controller.v1.model.Command;
 import nel.marco.mancala.controller.v1.model.Match;
 import nel.marco.mancala.controller.v1.model.PIT;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
+import nel.marco.mancala.service.exceptions.InvalidMoveException;
 import nel.marco.mancala.service.stones.MoveLogicService;
 import nel.marco.mancala.service.trigger.SpecialTriggerLogicService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,28 @@ class MancalaServiceTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
         mancalaService = new MancalaService(mockMoveLogicService, specialTriggerLogicService);
+    }
+
+    @Test
+    @DisplayName("Trying to move from scoreboard pit")
+    void executeCommand_movingFromScoreboardPit_expectException() {
+
+        Assertions.assertThrows(InvalidMoveException.class, () -> {
+            Match match = createDefaultMatch(true);
+            Command command = new Command();
+            command.setPit(PIT.PLAYER_1_BOARD);
+
+            mancalaService.executeCommand(command, match.getUniqueMatchId(), match.getPlayerModelA().getUniqueId());
+        });
+
+        Assertions.assertThrows(InvalidMoveException.class, () -> {
+            Match match = createDefaultMatch(false);
+
+            Command command = new Command();
+            command.setPit(PIT.PLAYER_2_BOARD);
+            mancalaService.executeCommand(command, match.getUniqueMatchId(), match.getPlayerModelB().getUniqueId());
+
+        });
     }
 
     @Test
@@ -76,7 +100,7 @@ class MancalaServiceTest {
         Command command = new Command();
         command.setPit(PIT.SIX);
 
-        when(mockMoveLogicService.movingStones(anyBoolean(), any(), any())).thenReturn(match);
+        when(mockMoveLogicService.movingStones(any(), any())).thenReturn(match);
         when(specialTriggerLogicService.hasSpecialLogicTriggered(any())).thenReturn(match);
         String actual = mancalaService.executeCommand(command, match.getUniqueMatchId(), match.getPlayerModelB().getUniqueId());
 
@@ -92,7 +116,7 @@ class MancalaServiceTest {
         Command command = new Command();
         command.setPit(PIT.SIX);
 
-        when(mockMoveLogicService.movingStones(anyBoolean(), any(), any())).thenReturn(match);
+        when(mockMoveLogicService.movingStones(any(), any())).thenReturn(match);
         when(specialTriggerLogicService.hasSpecialLogicTriggered(any())).thenReturn(match);
         String actual = mancalaService.executeCommand(command, match.getUniqueMatchId(), match.getPlayerModelB().getUniqueId());
 

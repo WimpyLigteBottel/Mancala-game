@@ -34,7 +34,7 @@ class MoveLogicServiceTest {
         assertEquals(0, match.getPlayerModelA().getPits().get(PIT.FIRST), "The first pit should be empty");
 
         Assertions.assertThrows(InvalidMoveException.class, () -> {
-            moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
+            moveLogicService.movingStones(PIT.FIRST, match);
         });
     }
 
@@ -47,23 +47,11 @@ class MoveLogicServiceTest {
         assertEquals(0, match.getPlayerModelB().getPits().get(PIT.FIRST), "The first pit should be empty");
 
         Assertions.assertThrows(InvalidMoveException.class, () -> {
-            moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
+            moveLogicService.movingStones(PIT.FIRST, match);
         });
     }
 
-    @Test
-    @DisplayName("Trying to move from scoreboard pit")
-    void movingStones_movingFromScoreboardPit_expectException() {
 
-        Match match = createDefaultMatch(true);
-        Assertions.assertThrows(InvalidMoveException.class, () -> {
-            moveLogicService.movingStones(match.isPlayerATurn(), PIT.PLAYER_1_BOARD, match);
-        });
-
-        Assertions.assertThrows(InvalidMoveException.class, () -> {
-            moveLogicService.movingStones(match.isPlayerATurn(), PIT.PLAYER_2_BOARD, match);
-        });
-    }
 
     @Test
     @DisplayName("Player A starting turn on pit 1")
@@ -71,7 +59,7 @@ class MoveLogicServiceTest {
 
         Match match = createDefaultMatch(true);
 
-        match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
+        match = moveLogicService.movingStones(PIT.FIRST, match);
 
         Map<PIT, Integer> pits = match.getPlayerModelA().getPits();
 
@@ -92,7 +80,7 @@ class MoveLogicServiceTest {
         match.getPlayerModelA().getPits().put(PIT.FIRST, 1);
         assertEquals(1, match.getPlayerModelA().getPits().get(PIT.FIRST), "The first pit did not have correct stones for setup");
 
-        match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
+        match = moveLogicService.movingStones(PIT.FIRST, match);
 
         Map<PIT, Integer> pits = match.getPlayerModelA().getPits();
 
@@ -112,7 +100,7 @@ class MoveLogicServiceTest {
         match.getPlayerModelA().getPits().put(PIT.SIX, 1);
         assertEquals(1, match.getPlayerModelA().getPits().get(PIT.SIX), "The first pit did not have correct stones for setup");
 
-        match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.SIX, match);
+        match = moveLogicService.movingStones(PIT.SIX, match);
 
         Map<PIT, Integer> pits = match.getPlayerModelA().getPits();
 
@@ -133,7 +121,7 @@ class MoveLogicServiceTest {
         match.getPlayerModelA().getPits().put(PIT.FIRST, 12);
         assertEquals(12, match.getPlayerModelA().getPits().get(PIT.FIRST), "The first pit did not have correct stones for setup");
 
-        match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
+        match = moveLogicService.movingStones(PIT.FIRST, match);
 
         Map<PIT, Integer> playerAPits = match.getPlayerModelA().getPits();
 
@@ -166,7 +154,7 @@ class MoveLogicServiceTest {
 
         assertEquals(13, match.getPlayerModelA().getPits().get(PIT.FIRST), "The first pit did not have correct stones for setup");
 
-        match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
+        match = moveLogicService.movingStones(PIT.FIRST, match);
 
         Map<PIT, Integer> playerAPits = match.getPlayerModelA().getPits();
 
@@ -199,7 +187,7 @@ class MoveLogicServiceTest {
 
         assertEquals(13, match.getPlayerModelB().getPits().get(PIT.FIRST), "The first pit did not have correct stones for setup");
 
-        match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
+        match = moveLogicService.movingStones(PIT.FIRST, match);
 
         Map<PIT, Integer> playerB = match.getPlayerModelB().getPits();
 
@@ -232,7 +220,7 @@ class MoveLogicServiceTest {
 
         assertEquals(6, match.getPlayerModelA().getPits().get(PIT.SECOND), "The pit did not have correct stones for setup");
 
-        match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.SECOND, match);
+        match = moveLogicService.movingStones(PIT.SECOND, match);
 
         Map<PIT, Integer> playerAPits = match.getPlayerModelA().getPits();
 
@@ -261,7 +249,7 @@ class MoveLogicServiceTest {
     void movingStones_playerB_firstPit_with6Stones_expectCorrectStonePlacement() {
 
         Match match = createDefaultMatch(false);
-        match = moveLogicService.movingStones(match.isPlayerATurn(), PIT.FIRST, match);
+        match = moveLogicService.movingStones(PIT.FIRST, match);
 
         Map<PIT, Integer> pits = match.getPlayerModelB().getPits();
 

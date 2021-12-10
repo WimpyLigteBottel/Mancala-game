@@ -14,16 +14,28 @@ import java.util.Map;
 @Service
 public class MoveLogicService {
 
-    public Match movingStones(boolean isPlayerA, PIT pit, Match match) {
+    /**
+     * Handles the core logic of moving the stones around the board.
+     * <p>
+     * Notes: The board operates slightly differently for active player and opponent.
+     * <p>
+     * <p>
+     * See below on how the board should flow
+     * x <- x <- x
+     * !         ^
+     * x -> x -> x
+     *
+     * @param pit   The pit of stones that the player wishes to move
+     * @param match The match details
+     * @return
+     */
+    public Match movingStones(PIT pit, Match match) {
 
-
-
-        if (isPlayerA) {
+        if (match.isPlayerATurn()) {
             Map<PIT, Integer> activePlayer = match.getPlayerModelA().getPits();
             Map<PIT, Integer> opponent = match.getPlayerModelB().getPits();
             return moveStonesToPitsForPlayerA(pit, match, activePlayer, opponent);
         }
-
 
         Map<PIT, Integer> activePlayer = match.getPlayerModelB().getPits();
         Map<PIT, Integer> opponent = match.getPlayerModelA().getPits();
@@ -41,7 +53,7 @@ public class MoveLogicService {
         }
 
         while (totalStones > 0) {
-            for (int i = startingPoint.getPitIndex() + 1; i < 7; i++) {
+            for (int i = startingPoint.getPitIndex() + 1; i <= 6; i++) {
                 if (totalStones == 0)
                     break;
                 PIT pit = PIT.valueOf(i);
@@ -61,7 +73,7 @@ public class MoveLogicService {
             }
 
             if (totalStones > 0) {
-                for (int i = 6; i > 0; i--) {
+                for (int i = 6; i >= 1; i--) {
                     if (totalStones == 0)
                         break;
                     PIT pit = PIT.valueOf(i);
@@ -96,7 +108,7 @@ public class MoveLogicService {
         }
 
         while (totalStones > 0) {
-            for (int i = startingPoint.getPitIndex() - 1; i > 0; i--) {
+            for (int i = startingPoint.getPitIndex() - 1; i >= 1; i--) {
                 if (totalStones == 0)
                     break;
                 PIT pit = PIT.valueOf(i);
@@ -116,7 +128,7 @@ public class MoveLogicService {
             }
 
             if (totalStones > 0) {
-                for (int i = 1; i < 7; i++) {
+                for (int i = 1; i <= 6; i++) {
                     if (totalStones == 0)
                         break;
                     PIT pit = PIT.valueOf(i);

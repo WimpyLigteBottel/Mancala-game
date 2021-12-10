@@ -121,7 +121,7 @@ public class MancalaService {
         validate(command, uniquePlayerId, match);
 
         Match updatedMatch;
-        updatedMatch = moveLogicService.movingStones(match.isPlayerATurn(), command.getPit(), match);
+        updatedMatch = moveLogicService.movingStones(command.getPit(), match);
         updatedMatch = specialTriggerLogicService.hasSpecialLogicTriggered(updatedMatch);
         updateMatch(updatedMatch);
 
