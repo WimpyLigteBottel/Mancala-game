@@ -16,22 +16,18 @@ public class MoveLogicService {
 
     public Match movingStones(boolean isPlayerA, PIT pit, Match match) {
 
-        if (pit == PIT.PLAYER_1_BOARD || pit == PIT.PLAYER_2_BOARD) {
-            throw new InvalidMoveException("Can't move stones from your scoreboard");
-        }
 
-        Map<PIT, Integer> activePlayer;
-        Map<PIT, Integer> opponent;
 
         if (isPlayerA) {
-            activePlayer = match.getPlayerModelA().getPits();
-            opponent = match.getPlayerModelB().getPits();
+            Map<PIT, Integer> activePlayer = match.getPlayerModelA().getPits();
+            Map<PIT, Integer> opponent = match.getPlayerModelB().getPits();
             return moveStonesToPitsForPlayerA(pit, match, activePlayer, opponent);
-        } else {
-            activePlayer = match.getPlayerModelB().getPits();
-            opponent = match.getPlayerModelA().getPits();
-            return moveStonesToForPlayerB(pit, match, activePlayer, opponent);
         }
+
+
+        Map<PIT, Integer> activePlayer = match.getPlayerModelB().getPits();
+        Map<PIT, Integer> opponent = match.getPlayerModelA().getPits();
+        return moveStonesToForPlayerB(pit, match, activePlayer, opponent);
 
     }
 

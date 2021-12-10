@@ -5,10 +5,7 @@ import nel.marco.mancala.controller.v1.model.Command;
 import nel.marco.mancala.controller.v1.model.Match;
 import nel.marco.mancala.controller.v1.model.PIT;
 import nel.marco.mancala.controller.v1.model.PlayerModel;
-import nel.marco.mancala.service.exceptions.MatchDoesNotExistException;
-import nel.marco.mancala.service.exceptions.MatchIsOverException;
-import nel.marco.mancala.service.exceptions.NotThatPlayerTurnException;
-import nel.marco.mancala.service.exceptions.UnknownPlayerException;
+import nel.marco.mancala.service.exceptions.*;
 import nel.marco.mancala.service.stones.MoveLogicService;
 import nel.marco.mancala.service.trigger.SpecialTriggerLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -166,6 +163,10 @@ public class MancalaService {
         if ((isPlayerA && !isPlayerATurn || isPlayerB && !isPlayerBTurn)) {
             log.error("INVALID PLAYER COMMAND!!! [playerId={};command={}]", uniquePlayerId, command.getPit());
             throw new NotThatPlayerTurnException("Not that player turn yet");
+        }
+
+        if (command.getPit() == PIT.PLAYER_1_BOARD || command.getPit() == PIT.PLAYER_2_BOARD) {
+            throw new InvalidMoveException("Can't move stones from your scoreboard");
         }
     }
 
