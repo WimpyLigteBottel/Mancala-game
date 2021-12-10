@@ -7,15 +7,13 @@
     justify-content: center;
 }
 
-.container__column {
+.column {
     /* Content is centered vertically */
     align-items: center;
-    display: flex;
     flex-direction: column;
     justify-content: center;
 
     /* Make all columns have the same width */
-    flex: 1;
 
     /* OPTIONAL: Space between columns */
     margin: 0 8px;
@@ -25,10 +23,19 @@
     border-radius: 4px;
 }
 
+.score{
+    width: 100px;
+    height: 90px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
 .red {
-color:red;
+    color:red;
 }
 
 .blue {
-color:blue;
+    color:blue;
 }

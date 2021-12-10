@@ -8,28 +8,26 @@
 <body>
 
 <div class="container">
-    <div style="display:flex">
-        <span>MatchId:</span>
-        <form action="#" name="getMatchForm" th:action="@{/getMatch}" method="get">
-            <span><input id="matchIdTextField" type="text" size="50" name="matchId" data-th-object="${model}"
-                         th:field="${match.uniqueMatchId}"></span>
-            <span><input id="activePlayer" type="hidden" name="activePlayer" th:value="${activePlayer}"></span>
-            <span><input id="getStatsButton" type="submit" value="get stats"/></span>
-
-
-        </form>
-
-        <form action="#" th:action="@{/createnewgame}" method="get">
-            <span><input type="submit" value="create new game"/></span>
-        </form>
-
-    </div>
+    <form style="text-align:center;" action="#" th:action="@{/createnewgame}" method="get">
+        <span><input type="submit" value="create new game"/></span>
+    </form>
 </div>
-
+<br/>
+<div class="container">
+    <form action="#" name="getMatchForm" th:action="@{/getMatch}" method="get">
+        <span>MatchId:</span>
+        <span><input id="matchIdTextField" type="text" size="50" name="matchId" data-th-object="${model}"
+                     th:field="${match.uniqueMatchId}"></span>
+        <span><input id="activePlayer" type="hidden" name="activePlayer" th:value="${activePlayer}"></span>
+        <span><input id="getStatsButton" type="submit" value="get stats"/></span>
+    </form>
+</div>
+<br/>
+<br/>
 <div class="container">
     <div id="PlayerABox" style="display:flex" th:if="${activePlayer != match.playerModelB.uniqueId}">
         <span>Player A:</span>
-        <span> <input id="uniquePlayerIdA" th:field="${match.playerModelA.uniqueId}" type="text" size="20"/></span>
+        <span><input id="uniquePlayerIdA" th:field="${match.playerModelA.uniqueId}" type="text" size="20"/></span>
         <span><button type="button" th:onclick="setCurrentPlayer('uniquePlayerIdA')">claim</button></span>
     </div>
 
@@ -39,67 +37,68 @@
         <span><button type="button" th:onclick="setCurrentPlayer('uniquePlayerIdB')">claim</button></span>
     </div>
 </div>
-
-
-<br/>
-<br/>
-<br/>
-
-<div class="container">
-
-    Player B
-
-    <div class="container__column blue" th:text="${'FIRST: '+ match.playerModelB.pits['FIRST']}"
-         th:onclick="sendCommand('FIRST')">FIRST
-    </div>
-    <div class="container__column blue" th:onclick="sendCommand('SECOND')"
-         th:text="${'SECOND: '+match.playerModelB.pits['SECOND']}">SECOND
-    </div>
-    <div class="container__column blue" th:onclick="sendCommand('THIRD')"
-         th:text="${'THIRD: '+match.playerModelB.pits['THIRD']}">THIRD
-    </div>
-    <div class="container__column blue" th:onclick="sendCommand('FOURTH')"
-         th:text="${'FOURTH: '+match.playerModelB.pits['FOURTH']}">FOURTH
-    </div>
-    <div class="container__column blue" th:onclick="sendCommand('FIFTH')"
-         th:text="${'FIFTH: '+match.playerModelB.pits['FIFTH']}">FIFTH
-    </div>
-    <div class="container__column blue" th:onclick="sendCommand('SIX')"
-         th:text="${'SIX: '+match.playerModelB.pits['SIX']}">SIX
-    </div>
-
-
-</div>
-<br/>
-_____<span th:text="${'Player A total == '+ match.playerModelA.totalScore}"/>
-_________ <span th:if="${match.isPlayerATurn}">PLAYER A TURN</span><span th:if="${!match.isPlayerATurn}">PLAYER B TURN</span>
-_____<span th:text="${'Player B total == '+ match.playerModelB.totalScore}"/>_________
-<br/>
 <br/>
 <div class="container">
-    Player A
-
-    <div class="container__column red" th:onclick="sendCommand('FIRST')"
-         th:text="${'FIRST: ' + match.playerModelA.pits['FIRST']}">FIRST
+    <span th:if="${match.isPlayerATurn}" class="red">PLAYER A TURN</span>
+    <span th:if="${!match.isPlayerATurn}" class="blue">PLAYER B TURN</span>
+</div>
+<br/>
+<div class="container">
+    <div class="column score">
+            <span id="playerAScore" class="blue score"
+                  th:text="${'Score: ' + match.playerModelB.totalScore}"></span><br/>
+        <span id="playerAScorePool" class="blue score" th:text="${match.playerModelB.totalScore}"></span>
     </div>
-    <div class="container__column red" th:onclick="sendCommand('SECOND')"
-         th:text="${'SECOND: ' + match.playerModelA.pits['SECOND']}">SECOND
+    <div class="column">
+        <div class="container blue">
+            <div class="column pointer" th:text="${'FIRST: '+ match.playerModelB.pits['FIRST']}"
+                 th:onclick="sendCommand('FIRST')">FIRST
+            </div>
+            <div class="column pointer" th:onclick="sendCommand('SECOND')"
+                 th:text="${'SECOND: '+match.playerModelB.pits['SECOND']}">SECOND
+            </div>
+            <div class="column pointer" th:onclick="sendCommand('THIRD')"
+                 th:text="${'THIRD: '+match.playerModelB.pits['THIRD']}">THIRD
+            </div>
+            <div class="column pointer" th:onclick="sendCommand('FOURTH')"
+                 th:text="${'FOURTH: '+match.playerModelB.pits['FOURTH']}">FOURTH
+            </div>
+            <div class="column pointer" th:onclick="sendCommand('FIFTH')"
+                 th:text="${'FIFTH: '+match.playerModelB.pits['FIFTH']}">FIFTH
+            </div>
+            <div class="column pointer" th:onclick="sendCommand('SIX')"
+                 th:text="${'SIX: '+match.playerModelB.pits['SIX']}">SIX
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <br/>
+        <div class="container red">
+            <div class="column pointer" th:onclick="sendCommand('FIRST')"
+                 th:text="${'FIRST: ' + match.playerModelA.pits['FIRST']}">FIRST
+            </div>
+            <div class="column pointer" th:onclick="sendCommand('SECOND')"
+                 th:text="${'SECOND: ' + match.playerModelA.pits['SECOND']}">SECOND
+            </div>
+            <div class="column pointer" th:onclick="sendCommand('THIRD')"
+                 th:text="${'THIRD: ' + match.playerModelA.pits['THIRD']}">THIRD
+            </div>
+            <div class="column pointer" th:onclick="sendCommand('FOURTH')"
+                 th:text="${'FOURTH: ' + match.playerModelA.pits['FOURTH']}">FOURTH
+            </div>
+            <div class="column pointer" th:onclick="sendCommand('FIFTH')"
+                 th:text="${'FIFTH: ' + match.playerModelA.pits['FIFTH']}">FIFTH
+            </div>
+            <div class="column pointer" th:onclick="sendCommand('SIX')"
+                 th:text="${'SIX: '+ match.playerModelA.pits['SIX']}">SIX
+            </div>
+        </div>
     </div>
-    <div class="container__column red" th:onclick="sendCommand('THIRD')"
-         th:text="${'THIRD: ' + match.playerModelA.pits['THIRD']}">THIRD
-    </div>
-    <div class="container__column red" th:onclick="sendCommand('FOURTH')"
-         th:text="${'FOURTH: ' + match.playerModelA.pits['FOURTH']}">FOURTH
-    </div>
-    <div class="container__column red" th:onclick="sendCommand('FIFTH')"
-         th:text="${'FIFTH: ' + match.playerModelA.pits['FIFTH']}">FIFTH
-    </div>
-    <div class="container__column red" th:onclick="sendCommand('SIX')"
-         th:text="${'SIX: '+ match.playerModelA.pits['SIX']}">SIX
+    <div class="column score">
+        <span id="playerBScore" class="red" th:text="${'Score: ' + match.playerModelA.totalScore}"></span> <br/>
+        <span id="playerBScorePool" class="red" th:text="${match.playerModelA.totalScore}" value="[]"></span>
     </div>
 </div>
-
-
 </body>
 </html>
 
@@ -107,7 +106,9 @@ _____<span th:text="${'Player B total == '+ match.playerModelB.totalScore}"/>___
 
     var currentPlayer = '';
 
-    window.onload = getCurrentPlayer;
+    window.onload = onPageLoad;
+
+
 
     function sendCommand(value){
         if(currentPlayer === ''){
@@ -134,7 +135,6 @@ _____<span th:text="${'Player B total == '+ match.playerModelB.totalScore}"/>___
 
     }
 
-
     function setCurrentPlayer(value){
         if(value === 'uniquePlayerIdA'){
           currentPlayer = document.getElementById('uniquePlayerIdA').value;
@@ -153,11 +153,31 @@ _____<span th:text="${'Player B total == '+ match.playerModelB.totalScore}"/>___
         currentPlayer = document.getElementById('activePlayer').value;
     }
 
-    setInterval(function() {
-        if(currentPlayer !== ''){
-            document.getElementById("getStatsButton").click();
-        }
-    }, 1000 * 3);
+    function updateScoreText(){
+        let playerAScore = document.getElementById("playerAScorePool").outerText;
+        document.getElementById('playerAScorePool').outerText = "[x]".repeat(playerAScore);
+
+
+        let playerBScore = document.getElementById("playerBScorePool").outerText;
+        document.getElementById('playerBScorePool').outerText = "[x]".repeat(playerBScore);
+    }
+
+    function refreshPage(){
+        let timeToRefreshInMilliseconds = 1000 * 3;
+
+          setInterval(function() {
+            if(currentPlayer !== ''){
+                document.getElementById("getStatsButton").click();
+            }
+        }, timeToRefreshInMilliseconds);
+    }
+
+
+    function onPageLoad(){
+        getCurrentPlayer();
+        updateScoreText();
+        refreshPage();
+    }
 
 
 
