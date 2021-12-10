@@ -32,31 +32,28 @@ public class SpecialTriggerLogicService {
     private Match isGameOver(Match updatedMatch) {
 
 
-        Map<PIT, Integer> playerAPits = updatedMatch.getPlayerModelA().getPits();
-        Map<PIT, Integer> playerBPits = updatedMatch.getPlayerModelB().getPits();
 
-
-        updatedMatch = isGameOver(updatedMatch, playerAPits, playerBPits);
-        updatedMatch = isGameOver(updatedMatch, playerBPits, playerAPits);
+        updatedMatch = isGameOver(updatedMatch, updatedMatch.getPlayerModelA(), updatedMatch.getPlayerModelB());
+        updatedMatch = isGameOver(updatedMatch, updatedMatch.getPlayerModelB(), updatedMatch.getPlayerModelA());
 
         return updatedMatch;
     }
 
-    private Match isGameOver(Match updatedMatch, Map<PIT, Integer> activePlayer, Map<PIT, Integer> opponent) {
+    private Match isGameOver(Match updatedMatch, PlayerModel activePlayer, PlayerModel opponent) {
         boolean isFieldClear = true;
         for (int i = 1; i < 7; i++) {
-            if (activePlayer.get(PIT.valueOf(i)) != 0) {
+            if (activePlayer.getPits().get(PIT.valueOf(i)) != 0) {
                 isFieldClear = false;
             }
         }
 
         if (isFieldClear) {
-            int addUpRemainingStones = opponent.values().stream().mapToInt(Integer::intValue).sum();
+            int addUpRemainingStones = opponent.getPits().values().stream().mapToInt(Integer::intValue).sum();
             for (int i = 1; i < 7; i++) {
-                opponent.put(PIT.valueOf(i), 0);
+                opponent.getPits().put(PIT.valueOf(i), 0);
             }
-            long totalScore = updatedMatch.getPlayerModelB().getTotalScore();
-            updatedMatch.getPlayerModelB().setTotalScore(totalScore + addUpRemainingStones);
+            long totalScore = opponent.getTotalScore();
+            opponent.setTotalScore(totalScore + addUpRemainingStones);
             updatedMatch.setGameOver(true);
         }
 

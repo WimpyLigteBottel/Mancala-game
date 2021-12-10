@@ -9,21 +9,21 @@ import nel.marco.mancala.service.stones.MoveLogicService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SpecialTriggerLogicServiceTest {
-    SpecialTriggerLogicService specialTriggerLogicService;
 
     MancalaService mancalaService;
-
-    MoveLogicService moveLogicService;
+    SpecialTriggerLogicService specialTriggerLogicService;
 
     @BeforeEach
     void setUp() {
         specialTriggerLogicService = new SpecialTriggerLogicService();
-
-        mancalaService = new MancalaService(moveLogicService, specialTriggerLogicService);
+        mancalaService = new MancalaService(Mockito.mock(MoveLogicService.class), specialTriggerLogicService);
     }
 
     @Test
@@ -89,6 +89,50 @@ class SpecialTriggerLogicServiceTest {
 
 
         assertEquals(7, actual.getPlayerModelB().getTotalScore());
+    }
+
+
+    @Test
+    @DisplayName("Game is over == Player B field is clear")
+    void hasSpecialLogicTriggered_playerBFieldIsClear_expectGameOver() {
+        Match defaultMatch = createDefaultMatch(true);
+
+
+        assertEquals(0, defaultMatch.getPlayerModelA().getTotalScore(), "Game started and expect score to be 0");
+
+        HashMap<PIT, Integer> copy = new HashMap<>(defaultMatch.getPlayerModelB().getPits());
+
+        //Clearing Player B board
+        copy.forEach((pit, integer) -> {
+            defaultMatch.getPlayerModelB().getPits().put(pit, 0);
+        });
+
+        Match actual = specialTriggerLogicService.hasSpecialLogicTriggered(defaultMatch);
+
+
+        assertEquals(0, actual.getPlayerModelB().getTotalScore());
+        assertEquals(36, actual.getPlayerModelA().getTotalScore());
+    }
+
+    @Test
+    @DisplayName("Game is over == Player A field is clear")
+    void hasSpecialLogicTriggered_playerAFieldIsClear_expectGameOver() {
+        Match defaultMatch = createDefaultMatch(true);
+
+        assertEquals(0, defaultMatch.getPlayerModelB().getTotalScore(), "Game started and expect score to be 0");
+
+        HashMap<PIT, Integer> copy = new HashMap<>(defaultMatch.getPlayerModelA().getPits());
+
+        //Clearing Player A board
+        copy.forEach((pit, integer) -> {
+            defaultMatch.getPlayerModelA().getPits().put(pit, 0);
+        });
+
+        Match actual = specialTriggerLogicService.hasSpecialLogicTriggered(defaultMatch);
+
+
+        assertEquals(36, actual.getPlayerModelB().getTotalScore());
+        assertEquals(0, actual.getPlayerModelA().getTotalScore());
     }
 
     private Match createDefaultMatch(boolean isPlayerAStarting) {
