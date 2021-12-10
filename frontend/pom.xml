@@ -16,12 +16,14 @@
 
     <dependencies>
 
+        <!-- This is me being lazy, importing models from backendend-->
         <dependency>
             <groupId>nel.marco</groupId>
             <artifactId>mancala-backend</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- This makes dev springboot application easier (aka refreshing of static resource content)-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -45,11 +47,23 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
+
+        <!-- Helps reduce down boiler plate code -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Makes it so that i can run this application with java -jar XXXX -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>
