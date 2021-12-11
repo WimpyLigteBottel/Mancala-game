@@ -7,6 +7,13 @@
 </head>
 <body>
 
+<form action="#" name="executeCommandForm" th:action="@{/executeCommand}" method="get">
+    <input type="hidden" name="command" id="hiddenCommandText"/>
+    <span><input style="visibility:hidden" type="hidden" name="activePlayer" th:value="${activePlayer}"></span>
+    <span><input style="visibility:hidden" name="matchId" type="hidden" data-th-object="${model}"
+                 th:field="${match.uniqueMatchId}"></span>
+    <span><input style="visibility:hidden" id="submitCommandButton" type="submit" value="submit command"/></span>
+</form>
 <div class="container">
     <form style="text-align:center;" action="#" th:action="@{/createnewgame}" method="get">
         <span><input type="submit" value="create new game"/></span>
@@ -48,6 +55,8 @@
     <div class="column brownboard">
         <span th:if="${match.isPlayerATurn}" class="playerATextColor">PLAYER A TURN</span>
         <span th:if="${!match.isPlayerATurn}" class="playerBTextColor">PLAYER B TURN</span>
+        <br/>
+        <span id="errorMessageText" th:text="${error}" style="color:red"/>
     </div>
 </div>
 <br/>
@@ -59,22 +68,22 @@
     </div>
     <div class="column brownboard">
         <div class="container playerBTextColor">
-            <div class="column pointer pit" th:text="${match.playerModelB.pits['FIRST']}"
-                 th:onclick="sendCommand('FIRST')">FIRST
+            <div id="playerBPit1" class="column pointer pit" th:text="${match.playerModelB.pits['FIRST']}"
+                 th:onclick="sendCommandGetRequest('FIRST')">FIRST
             </div>
-            <div class="column pointer pit" th:onclick="sendCommand('SECOND')"
+            <div id="playerBPit2" class="column pointer pit" th:onclick="sendCommandGetRequest('SECOND')"
                  th:text="${match.playerModelB.pits['SECOND']}">SECOND
             </div>
-            <div class="column pointer pit" th:onclick="sendCommand('THIRD')"
+            <div id="playerBPit3" class="column pointer pit" th:onclick="sendCommandGetRequest('THIRD')"
                  th:text="${match.playerModelB.pits['THIRD']}">THIRD
             </div>
-            <div class="column pointer pit" th:onclick="sendCommand('FOURTH')"
+            <div id="playerBPit4" class="column pointer pit" th:onclick="sendCommandGetRequest('FOURTH')"
                  th:text="${match.playerModelB.pits['FOURTH']}">FOURTH
             </div>
-            <div class="column pointer pit" th:onclick="sendCommand('FIFTH')"
+            <div id="playerBPit5" class="column pointer pit" th:onclick="sendCommandGetRequest('FIFTH')"
                  th:text="${match.playerModelB.pits['FIFTH']}">FIFTH
             </div>
-            <div class="column pointer pit" th:onclick="sendCommand('SIX')"
+            <div id="playerBPit6" class="column pointer pit" th:onclick="sendCommandGetRequest('SIX')"
                  th:text="${match.playerModelB.pits['SIX']}">SIX
             </div>
         </div>
@@ -82,65 +91,48 @@
         <br/>
         <br/>
         <div class="container playerATextColor">
-            <div class="column pointer pit" th:onclick="sendCommand('FIRST')"
+            <div id="playerAPit1" class="column pointer pit" th:onclick="sendCommandGetRequest('FIRST')"
                  th:text="${match.playerModelA.pits['FIRST']}">FIRST
             </div>
-            <div class="column pointer pit" th:onclick="sendCommand('SECOND')"
+            <div id="playerAPit2" class="column pointer pit" th:onclick="sendCommandGetRequest('SECOND')"
                  th:text="${match.playerModelA.pits['SECOND']}">SECOND
             </div>
-            <div class="column pointer pit" th:onclick="sendCommand('THIRD')"
+            <div id="playerAPit3" class="column pointer pit" th:onclick="sendCommandGetRequest('THIRD')"
                  th:text="${match.playerModelA.pits['THIRD']}">THIRD
             </div>
-            <div class="column pointer pit" th:onclick="sendCommand('FOURTH')"
+            <div id="playerAPit4" class="column pointer pit" th:onclick="sendCommandGetRequest('FOURTH')"
                  th:text="${ match.playerModelA.pits['FOURTH']}">FOURTH
             </div>
-            <div class="column pointer pit" th:onclick="sendCommand('FIFTH')"
+            <div id="playerAPit5" class="column pointer pit" th:onclick="sendCommandGetRequest('FIFTH')"
                  th:text="${match.playerModelA.pits['FIFTH']}">FIFTH
             </div>
-            <div class="column pointer pit" th:onclick="sendCommand('SIX')"
+            <div id="playerAPit6" class="column pointer pit" th:onclick="sendCommandGetRequest('SIX')"
                  th:text="${match.playerModelA.pits['SIX']}">SIX
             </div>
         </div>
     </div>
     <div class="column score brownboard">
-        <span id="playerBScore" class="playerATextColor" th:text="${'Score: ' + match.playerModelA.totalScore}"></span> <br/>
+        <span id="playerBScore" class="playerATextColor" th:text="${'Score: ' + match.playerModelA.totalScore}"></span>
+        <br/>
         <span id="playerBScorePool" class="playerATextColor" th:text="${match.playerModelA.totalScore}"></span>
     </div>
 </div>
 </body>
 </html>
-
-<script>
+<script th:inline="javascript">
 
     var currentPlayer = '';
 
     window.onload = onPageLoad;
 
-
-
-    function sendCommand(value){
+    function sendCommandGetRequest(value){
         if(currentPlayer === ''){
             alert('You have not claimed a player yet');
             return;
         }
 
-        let matchId =  document.getElementById('matchIdTextField').value;
-        let url = `http://localhost:8080/v1/game/${matchId}/player/${currentPlayer}/command`;
-
-        let command = {
-            "pit": value
-        }
-
-        fetch(url,{
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(command)
-        }).then(response =>{
-            document.getElementById("getStatsButton").click();
-        });
-
+        document.getElementById("hiddenCommandText").value = value;
+        document.getElementById("submitCommandButton").click();
     }
 
     function setCurrentPlayer(value){
@@ -152,12 +144,9 @@
           document.getElementById('PlayerABox').style.visibility = 'hidden';
         }
         document.getElementById('activePlayer').value = currentPlayer;
-        console.log(currentPlayer);
     }
 
     function getCurrentPlayer(){
-        console.log('getCurrentPlayer');
-        console.log(document.getElementById('activePlayer').value);
         currentPlayer = document.getElementById('activePlayer').value;
     }
 
@@ -181,7 +170,51 @@
     }
 
 
+    function disableAllPits(){
+         document.getElementById("playerAPit1").onclick= null;
+         document.getElementById("playerAPit2").onclick= null;
+         document.getElementById("playerAPit3").onclick= null;
+         document.getElementById("playerAPit4").onclick= null;
+         document.getElementById("playerAPit5").onclick= null;
+         document.getElementById("playerAPit6").onclick= null;
+         document.getElementById("playerBPit1").onclick= null;
+         document.getElementById("playerBPit2").onclick= null;
+         document.getElementById("playerBPit3").onclick= null;
+         document.getElementById("playerBPit4").onclick= null;
+         document.getElementById("playerBPit5").onclick= null;
+         document.getElementById("playerBPit6").onclick= null;
+
+
+         document.getElementById("playerAPit1").classList.remove("pointer");
+         document.getElementById("playerAPit2").classList.remove("pointer");
+         document.getElementById("playerAPit3").classList.remove("pointer");
+         document.getElementById("playerAPit4").classList.remove("pointer");
+         document.getElementById("playerAPit5").classList.remove("pointer");
+         document.getElementById("playerAPit6").classList.remove("pointer");
+         document.getElementById("playerBPit1").classList.remove("pointer");
+         document.getElementById("playerBPit2").classList.remove("pointer");
+         document.getElementById("playerBPit3").classList.remove("pointer");
+         document.getElementById("playerBPit4").classList.remove("pointer");
+         document.getElementById("playerBPit5").classList.remove("pointer");
+         document.getElementById("playerBPit6").classList.remove("pointer");
+    }
+
+
+    function disableNoneActivePlayerCommands(){
+
+        if([[${match.isPlayerATurn && activePlayer == match.playerModelB.uniqueId}]]){
+          console.log("Player B should be disabled");
+          disableAllPits();
+        } else if([[${!match.isPlayerATurn && activePlayer == match.playerModelA.uniqueId}]]){
+          console.log("Player A should be disabled");
+          disableAllPits();
+        }
+
+    }
+
+
     function onPageLoad(){
+        disableNoneActivePlayerCommands();
         getCurrentPlayer();
         updateScoreText();
         refreshPage();

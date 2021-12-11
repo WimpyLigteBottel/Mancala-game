@@ -66,4 +66,22 @@ public class HomeController {
         }
 
     }
+
+    @GetMapping("/executeCommand")
+    public String executeCommand(@RequestParam(value = "activePlayer", required = false, defaultValue = "") String activePlayer,
+                                 @RequestParam(value = "uniqueMatchId", required = false) String uniqueMatchId,
+                                 @RequestParam(value = "command", required = false) String command,
+                                 Model model) {
+
+        try {
+            matchService.executeCommand(uniqueMatchId, activePlayer, command);
+        } catch (Exception e) {
+            log.error("executeCommand failed[activePlayer={};uniqueMatchId={};command={}]", activePlayer, uniqueMatchId, command);
+            String errorMessage = String.format("executeCommand failed [command=%s]", command);
+            model.addAttribute("error", errorMessage);
+        }
+
+        return landingPage(activePlayer, uniqueMatchId, model);
+
+    }
 }
