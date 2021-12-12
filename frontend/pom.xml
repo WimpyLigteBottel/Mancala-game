@@ -14,14 +14,11 @@
         <version>2.5.5</version>
     </parent>
 
-    <dependencies>
+    <properties>
+        <java.version>17</java.version>
+    </properties>
 
-        <!-- This is me being lazy, importing models from backendend-->
-        <dependency>
-            <groupId>nel.marco</groupId>
-            <artifactId>mancala-backend</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+    <dependencies>
 
         <!-- This makes dev springboot application easier (aka refreshing of static resource content)-->
         <dependency>
@@ -61,6 +58,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>14</source>
+                    <target>14</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>

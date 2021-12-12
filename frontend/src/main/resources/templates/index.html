@@ -69,22 +69,22 @@
     <div class="column brownboard">
         <div class="container playerBTextColor">
             <div id="playerBPit1" class="column pointer pit" th:text="${match.playerModelB.pits['FIRST']}"
-                 th:onclick="sendCommandGetRequest('FIRST')">FIRST
+                 th:onclick="sendCommandGetRequest('FIRST')">
             </div>
             <div id="playerBPit2" class="column pointer pit" th:onclick="sendCommandGetRequest('SECOND')"
-                 th:text="${match.playerModelB.pits['SECOND']}">SECOND
+                 th:text="${match.playerModelB.pits['SECOND']}">
             </div>
             <div id="playerBPit3" class="column pointer pit" th:onclick="sendCommandGetRequest('THIRD')"
-                 th:text="${match.playerModelB.pits['THIRD']}">THIRD
+                 th:text="${match.playerModelB.pits['THIRD']}">
             </div>
             <div id="playerBPit4" class="column pointer pit" th:onclick="sendCommandGetRequest('FOURTH')"
-                 th:text="${match.playerModelB.pits['FOURTH']}">FOURTH
+                 th:text="${match.playerModelB.pits['FOURTH']}">
             </div>
             <div id="playerBPit5" class="column pointer pit" th:onclick="sendCommandGetRequest('FIFTH')"
-                 th:text="${match.playerModelB.pits['FIFTH']}">FIFTH
+                 th:text="${match.playerModelB.pits['FIFTH']}">
             </div>
             <div id="playerBPit6" class="column pointer pit" th:onclick="sendCommandGetRequest('SIX')"
-                 th:text="${match.playerModelB.pits['SIX']}">SIX
+                 th:text="${match.playerModelB.pits['SIX']}">
             </div>
         </div>
         <br/>
@@ -92,22 +92,22 @@
         <br/>
         <div class="container playerATextColor">
             <div id="playerAPit1" class="column pointer pit" th:onclick="sendCommandGetRequest('FIRST')"
-                 th:text="${match.playerModelA.pits['FIRST']}">FIRST
+                 th:text="${match.playerModelA.pits['FIRST']}">
             </div>
             <div id="playerAPit2" class="column pointer pit" th:onclick="sendCommandGetRequest('SECOND')"
-                 th:text="${match.playerModelA.pits['SECOND']}">SECOND
+                 th:text="${match.playerModelA.pits['SECOND']}">
             </div>
             <div id="playerAPit3" class="column pointer pit" th:onclick="sendCommandGetRequest('THIRD')"
-                 th:text="${match.playerModelA.pits['THIRD']}">THIRD
+                 th:text="${match.playerModelA.pits['THIRD']}">
             </div>
             <div id="playerAPit4" class="column pointer pit" th:onclick="sendCommandGetRequest('FOURTH')"
-                 th:text="${ match.playerModelA.pits['FOURTH']}">FOURTH
+                 th:text="${ match.playerModelA.pits['FOURTH']}">
             </div>
             <div id="playerAPit5" class="column pointer pit" th:onclick="sendCommandGetRequest('FIFTH')"
-                 th:text="${match.playerModelA.pits['FIFTH']}">FIFTH
+                 th:text="${match.playerModelA.pits['FIFTH']}">
             </div>
             <div id="playerAPit6" class="column pointer pit" th:onclick="sendCommandGetRequest('SIX')"
-                 th:text="${match.playerModelA.pits['SIX']}">SIX
+                 th:text="${match.playerModelA.pits['SIX']}">
             </div>
         </div>
     </div>
@@ -116,6 +116,47 @@
         <br/>
         <span id="playerBScorePool" class="playerATextColor" th:text="${match.playerModelA.totalScore}"></span>
     </div>
+</div>
+<br/>
+<br/>
+<br/>
+
+<div class="rulesBoard">
+    <span class="bold">Rules</span>
+    <ul>
+        <li>
+            <span class="bold">Game Play</span>
+            <br/><br/>
+            <span>
+                The player who begins with the first move picks up all the stones in any of his
+                own six pits, and sows the stones on to the right, one in each of the following
+                pits, including his own big pit. No stones are put in the opponents' big pit. If the
+                player's last stone lands in his own big pit, he gets another turn. This can be
+                repeated several times before it's the other player's turn.
+            </span>
+        </li>
+        <br/>
+        <li>
+            <span class="bold">Capturing Stones</span>
+            <br/><br/>
+            <span>
+                During the game the pits are emptied on both sides. Always when the last stone
+                lands in an own empty pit, the player captures his own stone and all stones in the
+                opposite pit (the other player’s pit) and puts them in his own (big or little?) pit.
+            </span>
+        </li>
+        <br/>
+        <li>
+            <span class="bold">The Game Ends</span>
+            <br/><br/>
+            <span>
+                The game is over as soon as one of the sides runs out of stones. The player who
+                still has stones in his pits keeps them and puts them in his big pit. The winner of
+                the game is the player who has the most stones in his big pit.
+            </span>
+        </li>
+    </ul>
+
 </div>
 </body>
 </html>

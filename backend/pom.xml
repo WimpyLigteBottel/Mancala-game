@@ -21,6 +21,12 @@
 
     <dependencies>
 
+
+<!--        <dependency>-->
+<!--            <groupId>nel.marco</groupId>-->
+<!--            <artifactId>mancala-frontend</artifactId>-->
+<!--            <version>1.0-SNAPSHOT</version>-->
+<!--        </dependency>-->
         <!--Pulls in all the web code required for @RestControllers ect...-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

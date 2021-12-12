@@ -25,36 +25,42 @@ Step 2: mvn clean install the front-end second
 ```bash
 mvn clean install 
 ```
-Note: The frontend makes use of backend code and that is why you need to do it in that order
+
+(Lazy mode step)
+```
+If you are on windows you should be able to just run
+the "docker-compose-build.bat" and it will build
+and run the docker images.
+
+NOTE!!!!:
+YOU WILL NEED TO UPDATE THE application.properties in the frontend project to have correct backend ip address...
+
+By making it your own ip address it should work otherwise you will need to configure it correctly.
+
+```
 
 ## How to run the application
 
-After the instillation process you can do the following
+After the installation process you can do the following
 
 Windows
 
 'run mancala.bat'
 ```bat
 echo off
-
 cd .\backend\target
-
 start java -jar mancala-backend-1.0-SNAPSHOT.jar
-
 cd ..
 cd ..
-
 cd .\frontend\target
-
 start java -jar mancala-frontend-1.0-SNAPSHOT.jar
-
 ```
 
 Docker:
 
 Note: you will need to update the frontend application.properties as follows
 
-file: frontend/src/main/resources/application.properties
+File: frontend/src/main/resources/application.properties
 ```properties
 backend.base.url=http://<insert your ip address>:8080/v1
 
