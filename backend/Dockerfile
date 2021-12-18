@@ -20,7 +20,7 @@ RUN mvn -f pom.xml clean package
 ################################################################################
 FROM openjdk:17-alpine as runtime
 
-COPY --from=build /workspace/target/*.jar app.jar
+COPY --from=builder /workspace/target/*.jar app.jar
 
 EXPOSE 8080
 
