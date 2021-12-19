@@ -15,4 +15,4 @@ services:
         dockerfile: .\frontend\Dockerfile
     image: frontend:latest
     ports:
-        - "9000:9000"`
+        - "9000:9000"
