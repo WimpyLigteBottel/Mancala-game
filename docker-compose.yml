@@ -7,9 +7,7 @@ services:
         dockerfile: ./backend/Dockerfile
     image: backend:latest
     ports:
-        - 8080:8080
-    networks:
-        - spring-cloud-network
+        - "8080:8080"
   frontend:
     container_name: marco-mancala-frontend
     build:
@@ -17,9 +15,4 @@ services:
         dockerfile: .\frontend\Dockerfile
     image: frontend:latest
     ports:
-        - 9000:9000
-    networks:
-        - spring-cloud-network
-networks:
-    spring-cloud-network:
-        driver: bridge
+        - "9000:9000"`
